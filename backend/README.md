@@ -25,6 +25,7 @@ running `python3 freeze > requirements.txt`. This updates the list of dependenci
 To start the server, run the following from this directory:
 
 ```
+(env)$ python3 manage.py migrate            # make migrations, if any (updating the database schema)
 (env)$ python3 manage.py runserver
 ```
 
