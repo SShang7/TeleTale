@@ -152,6 +152,7 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'
 
 # Additional configuration settings
+
 SOCIALACCOUNT_QUERY_EMAIL = True
 ACCOUNT_LOGOUT_ON_GET= True
 ACCOUNT_UNIQUE_EMAIL = True
@@ -169,3 +170,15 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
+
+# Django REST framework configuration
+# https://www.django-rest-framework.org/
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
+

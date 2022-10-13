@@ -5,9 +5,10 @@ machines. Run the following commands to get started:
 
 ```
 $ cd backend
-$ python3 -m venv .venv                     # create a virtual environment
-$ source .venv/bin/activate                 # activate the virtual environment
-(env)$ pip3 install -r requirements.txt     # install dependencies
+$ python3 -m venv .venv                       # create a virtual environment
+$ source .venv/bin/activate                   # activate the virtual environment
+(.venv)$ pip3 install --upgrade pip3          # update pip to the newest version
+(.venv)$ pip3 install -r requirements.txt     # install dependencies
 ```
 
 You'll have to run `source .venv/bin/activate` whenever you start a new shell and need to activate the virtual
@@ -25,8 +26,8 @@ running `python3 freeze > requirements.txt`. This updates the list of dependenci
 To start the server, run the following from this directory:
 
 ```
-(env)$ python3 manage.py migrate            # make migrations, if any (updating the database schema)
-(env)$ python3 manage.py runserver
+(.venv)$ python3 manage.py migrate            # apply migrations, if any (updating the database schema)
+(.venv)$ python3 manage.py runserver
 ```
 
 By default, the server runs at http://127.0.0.1:8000/.
@@ -34,6 +35,6 @@ By default, the server runs at http://127.0.0.1:8000/.
 To run tests, run the following from this directory:
 
 ```
-(env)$ python3 manage.py test <APP_NAME>
+(.venv)$ python3 manage.py test <APP_NAME>
 ```
 
