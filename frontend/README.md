@@ -1,3 +1,8 @@
+# Code Formatting
+
+Install the [esbenp.prettier-vscode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+VS Code extension so that the JavaScript code will be formatted consistently.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
