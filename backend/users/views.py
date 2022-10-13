@@ -19,7 +19,7 @@ class ProfileView(APIView):
         try:
             profile = Profile.objects.get(user=user)
         except ObjectDoesNotExist:
-            profile = Profile(user=user, bio="")
+            profile = Profile(user=user, display_name=user.first_name, bio="")
             profile.save()
 
         return Response({
