@@ -11,4 +11,4 @@ class Chat:
         return self._dialog
 
     def clear_chat(self):
-        self._dialog.clear
+        self._dialog.clear()
