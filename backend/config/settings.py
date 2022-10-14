@@ -165,7 +165,7 @@ JWT_AUTH = {
         )
     ),
     'JWT_AUTH_HEADER_PREFIX': 'JWT',
-    'JWT_GET_USER_SECRET_KEY': lambda user: user.secret_key,
+    'JWT_GET_USER_SECRET_KEY': lambda user: 'sadfkjasdlkxsfakljsfjdfakajsfdkl',
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.selectors.jwt_response_payload_handler',
     'JWT_AUTH_COOKIE': 'jwt_token',
     'JWT_AUTH_COOKIE_SAMESITE': 'None'
@@ -173,4 +173,4 @@ JWT_AUTH = {
 
 # Google OAuth2 settings
 GOOGLE_OAUTH2_CLIENT_ID = env.str('DJANGO_GOOGLE_OAUTH2_CLIENT_ID')
-GOOGLE_OAUTH2_CLIENT_SECRET = env.str('DJANGO_GOOGLE_OAUTH2_CLIENT_ID')
+GOOGLE_OAUTH2_CLIENT_SECRET = env.str('DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET')
