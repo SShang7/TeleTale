@@ -14,6 +14,13 @@ $ source .venv/bin/activate                   # activate the virtual environment
 You'll have to run `source .venv/bin/activate` whenever you start a new shell and need to activate the virtual
 environment.
 
+For Google OAuth login, create a `.env` file in this `backend` directory. It should look like the following:
+```
+DJANGO_GOOGLE_OAUTH2_CLIENT_ID=<client_id>
+DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET=<client_secret>
+```
+`<client_id>` and `<client_secret>` should be replaced with their proper values.
+
 # Development
 
 This project uses Django 4.1 for the backend. For reference, check out the official
@@ -37,4 +44,3 @@ To run tests, run the following from this directory:
 ```
 (.venv)$ python3 manage.py test <APP_NAME>
 ```
-
