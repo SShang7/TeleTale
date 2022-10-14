@@ -23,7 +23,7 @@ DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET=<client_secret>
 
 # Development
 
-This project uses Django 4.1 for the backend. For reference, check out the official
+This project uses Python 3.8.* and Django 4.1 for the backend. For reference, check out the official
 [Django documentation](https://docs.djangoproject.com/en/4.1/), which contains tutorials, reference guides, and more.
 
 If you add/remove/update one of the dependencies, make sure you update the requirements.txt file. You can do so by
