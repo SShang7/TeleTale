@@ -1,9 +1,9 @@
 from django.urls import path
 
-from .  import views
+from .apis  import UserMeApi, UserInitApi
 
-app_name = 'accounts'
 
 urlpatterns = [
-    path('profile/', views.ProfileView.as_view(), name="profile_page")
+    path('me/', UserMeApi.as_view(), name='me'),
+    path('init/', UserInitApi.as_view(), name='init'),
 ]

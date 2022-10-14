@@ -7,9 +7,11 @@ cryptography==38.0.1
 defusedxml==0.7.1
 distlib==0.3.6
 Django==4.1.2
-django-allauth==0.51.0
 django-cors-headers==3.13.0
+django-environ==0.9.0
 djangorestframework==3.14.0
+drf-jwt==1.19.2
+environ==1.0
 filelock==3.8.0
 idna==3.4
 joblib==1.1.0
@@ -18,7 +20,7 @@ oauthlib==3.2.1
 Pillow==9.2.0
 platformdirs==2.5.2
 pycparser==2.21
-PyJWT==2.5.0
+PyJWT==1.7.1
 python3-openid==3.2.0
 pytz==2022.4
 requests==2.28.1
