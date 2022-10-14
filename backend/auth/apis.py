@@ -52,12 +52,14 @@ class GoogleLoginApi(PublicApiMixin, ApiErrorsMixin, APIView):
         api_uri = reverse('api:v1:auth:login-with-google')
         redirect_uri = f'{domain}{api_uri}'
 
-        access_token = google_get_access_token(code=code, redirect_uri=redirect_uri)
+        access_token = google_get_access_token(
+            code=code, redirect_uri=redirect_uri)
 
         user_data = google_get_user_info(access_token=access_token)
 
         profile_data = {
             'email': user_data['email'],
+            'username': user_data['email'],
             'first_name': user_data.get('givenName', ''),
             'last_name': user_data.get('familyName', ''),
         }
