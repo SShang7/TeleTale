@@ -1,9 +1,9 @@
 from django.urls import path
 
-from .apis  import UserMeApi, UserInitApi
+from .apis  import UserProfileApi, UserInitApi
 
 
 urlpatterns = [
-    path('me/', UserMeApi.as_view(), name='me'),
+    path('profile/', UserProfileApi.as_view(), name='profile'),
     path('init/', UserInitApi.as_view(), name='init'),
 ]
