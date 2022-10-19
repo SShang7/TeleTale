@@ -7,8 +7,8 @@ machines. Run the following commands to get started:
 $ cd backend
 $ python3 -m venv .venv                       # create a virtual environment
 $ source .venv/bin/activate                   # activate the virtual environment
-(.venv)$ pip3 install --upgrade pip3          # update pip to the newest version
-(.venv)$ pip3 install -r requirements.txt     # install dependencies
+(.venv)$ pip install --upgrade pip            # update pip to the newest version
+(.venv)$ pip install -r requirements.txt      # install dependencies
 ```
 
 You'll have to run `source .venv/bin/activate` whenever you start a new shell and need to activate the virtual
@@ -23,12 +23,12 @@ DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET=<client_secret>
 
 # Development
 
-This project uses Python 3.8.* and Django 4.1 for the backend. For reference, check out the official
+This project uses Python 3.6+ and Django 4.1 for the backend. For reference, check out the official
 [Django documentation](https://docs.djangoproject.com/en/4.1/), which contains tutorials, reference guides, and more.
 
 If you add/remove/update one of the dependencies, make sure you update the requirements.txt file. You can do so by
 running `python3 freeze > requirements.txt`. This updates the list of dependencies. If someone else has updated
-`requirements.txt`, make sure to run `pip3 install -r requirements.txt`.
+`requirements.txt`, make sure to run `pip install -r requirements.txt`.
 
 To start the server, run the following from this directory:
 
