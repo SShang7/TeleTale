@@ -38,8 +38,10 @@ SECRET_KEY = 'django-insecure-v*k0fc%)gup4e!3dygj_5vqpoi1sgkohb^m+%1n36lh@uv@j9w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-BASE_BACKEND_URL = env.str('DJANGO_BASE_BACKEND_URL', default='http://localhost:8000')
-BASE_FRONTEND_URL = env.str('DJANGO_BASE_FRONTEND_URL', default='http://localhost:3000')
+BASE_BACKEND_URL = env.str('DJANGO_BASE_BACKEND_URL',
+                           default='http://localhost:8000')
+BASE_FRONTEND_URL = env.str(
+    'DJANGO_BASE_FRONTEND_URL', default='http://localhost:3000')
 
 ALLOWED_HOSTS = []
 
@@ -53,7 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
@@ -151,6 +153,10 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOW_CREDENTIALS = True
 
 
 # Whitelist for CORS
