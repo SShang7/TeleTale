@@ -5,7 +5,7 @@ Game that you play with your friends to author your own picture book!
 
 We use [Docker](https://docs.docker.com/get-docker/) to containerize the application and maintain a
 consistent development environment across different machines. We use `npm` and `pip` for package
-management for the frontend and backend, respectively.
+management for the ReactJS frontend and the Django backend, respectively.
 
 To start the application, run `docker-compose start`. To stop the application, run
 `docker-compose stop`. The frontend will run at http://localhost:3000 while the backend will run at
