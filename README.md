@@ -28,3 +28,7 @@ DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET=<client_secret>
 * `$ docker-compose logs -f --tail=50 backend`: Follows the last 50 lines in the backend logs
     * Use Ctrl+C to exit
 * `$ docker-compose ps`: Views status of all docker containers
+
+## References
+
+* [Google OAuth tutorial](https://www.hacksoft.io/blog/google-oauth2-with-django-react-part-1)
