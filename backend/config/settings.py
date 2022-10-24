@@ -95,6 +95,34 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
+# Logging
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'default': {
+            'format': '%(levelname)s %(asctime)s '
+                      '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'default'
+        }
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        }
+    },
+}
+
+
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 

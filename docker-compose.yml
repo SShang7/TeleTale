@@ -1,0 +1,28 @@
+version: "3.2"
+
+services:
+  backend:
+    build:
+      context: ./backend/
+      dockerfile: Dockerfile
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    container_name: backend
+    volumes:
+      - ./backend:/backend
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+    command: npm start
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/frontend
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
