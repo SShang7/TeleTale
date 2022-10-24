@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Box, Button, Container } from "@mui/material";
 import { Google } from "@mui/icons-material";
 import { useCallback } from "react";
 
@@ -28,11 +28,11 @@ function Login() {
     }, []);
 
     return (
-        <div>
+        <Container sx={{ margin: "32px auto", textAlign: "center" }}>
             <Button variant="contained" endIcon={<Google></Google>} onClick={showGoogleLogin}>
                 Login
             </Button>
-        </div>
+        </Container>
     );
 }
 

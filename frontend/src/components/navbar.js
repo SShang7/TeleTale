@@ -12,6 +12,7 @@ import {
     MenuItem,
     IconButton,
 } from "@mui/material";
+import { useSelector } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 function Navbar() {
@@ -22,9 +23,6 @@ function Navbar() {
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
     const navigate = useNavigate();
-
-    const pages = [{ name: "Profile", link: "/profile" }];
-    const settings = ["Profile", "Logout"];
 
     // eslint-disable-next-line no-unused-vars
     const handleOpenNavMenu = (event) => {
@@ -41,9 +39,32 @@ function Navbar() {
         };
     };
 
-    const handleCloseUserMenu = () => {
-        setAnchorElUser(null);
+    const handleCloseUserMenu = (onClick) => {
+        return () => {
+            setAnchorElUser(null);
+            onClick();
+        };
     };
+
+    const pages = [{ name: "Profile", link: "/profile" }];
+    const settings = [
+        {
+            name: "Profile",
+            onClick: () => {
+                navigate("/profile");
+            },
+        },
+        {
+            name: "Logout",
+            onClick: () => {
+                window.location = "http://localhost:8000/api/v1/auth/logout/";
+            },
+        },
+    ];
+
+    const profile = useSelector((state) => {
+        return state;
+    });
 
     return (
         <AppBar position="static">
@@ -71,33 +92,44 @@ function Navbar() {
                     </Box>
 
                     <Box sx={{ flexGrow: 0 }}>
-                        <Tooltip title="Open settings">
-                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-                            </IconButton>
-                        </Tooltip>
-                        <Menu
-                            sx={{ mt: "45px" }}
-                            id="menu-appbar"
-                            anchorEl={anchorElUser}
-                            anchorOrigin={{
-                                vertical: "top",
-                                horizontal: "right",
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: "top",
-                                horizontal: "right",
-                            }}
-                            open={Boolean(anchorElUser)}
-                            onClose={handleCloseUserMenu}
-                        >
-                            {settings.map((setting) => (
-                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                    <Typography textAlign="center">{setting}</Typography>
-                                </MenuItem>
-                            ))}
-                        </Menu>
+                        {profile?.isLoggedIn ? (
+                            <>
+                                <Tooltip title="Open settings">
+                                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                        <Avatar alt={profile.name} src={profile.profile} />
+                                    </IconButton>
+                                </Tooltip>
+                                <Menu
+                                    sx={{ mt: "45px" }}
+                                    id="menu-appbar"
+                                    anchorEl={anchorElUser}
+                                    anchorOrigin={{
+                                        vertical: "top",
+                                        horizontal: "right",
+                                    }}
+                                    keepMounted
+                                    transformOrigin={{
+                                        vertical: "top",
+                                        horizontal: "right",
+                                    }}
+                                    open={Boolean(anchorElUser)}
+                                    onClose={handleCloseUserMenu(() => {})}
+                                >
+                                    {settings.map(({ name, onClick }) => (
+                                        <MenuItem key={name} onClick={handleCloseUserMenu(onClick)}>
+                                            <Typography textAlign="center">{name}</Typography>
+                                        </MenuItem>
+                                    ))}
+                                </Menu>
+                            </>
+                        ) : (
+                            <Button
+                                onClick={() => navigate("/login")}
+                                sx={{ my: 2, color: "white", display: "block" }}
+                            >
+                                Login
+                            </Button>
+                        )}
                     </Box>
                 </Toolbar>
             </Container>

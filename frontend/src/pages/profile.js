@@ -1,21 +1,19 @@
 import { Avatar, Card, CardContent, CircularProgress, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useSelector } from "react-redux";
+import { useLocation, Navigate } from "react-router-dom";
 
 function Profile() {
-    const [profile, setProfile] = useState(null);
+    const profile = useSelector((state) => {
+        return state;
+    });
 
-    useEffect(() => {
-        (async () => {
-            const response = await axios.get("http://localhost:8000/api/v1/users/profile/", {
-                withCredentials: true,
-            });
-            setProfile(response.data);
-        })();
-    }, []);
+    let location = useLocation();
 
     if (!profile) {
         return <CircularProgress />;
+    }
+    if (!profile.isLoggedIn) {
+        return <Navigate to="/login" state={{ from: location }} replace />;
     }
     return (
         <Card style={{ width: "40%", margin: "0 auto" }}>

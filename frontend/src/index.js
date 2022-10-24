@@ -3,11 +3,15 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { CssBaseline } from "@mui/material";
+import { fetchIsLoggedIn } from "./redux/actions";
+import store from "./redux/store";
 
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+
+store.dispatch(fetchIsLoggedIn());
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
