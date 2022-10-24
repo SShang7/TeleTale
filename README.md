@@ -33,3 +33,6 @@ DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET=<client_secret>
 ## References
 
 * [Google OAuth tutorial](https://www.hacksoft.io/blog/google-oauth2-with-django-react-part-1)
+* [Simple Redux tutorial](https://medium.com/mad-semicolon/fetch-initial-data-on-page-load-in-react-redux-application-16f4d8228543)
+* [Official React Router v6 tutorial](https://reactrouter.com/en/dev/start/tutorial)
+* [Material UI App Bar reference](https://reactrouter.com/en/dev/start/tutorial)
