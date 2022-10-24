@@ -8,8 +8,8 @@ consistent development environment across different machines. We use `npm` and `
 management for the [ReactJS](https://reactjs.org/docs/getting-started.html) frontend and the
 [Django](https://docs.djangoproject.com/en/4.1/) backend, respectively.
 
-To start the application, run `docker-compose start`. To stop the application, run
-`docker-compose stop`. The frontend will run at http://localhost:3000 while the backend will run at
+To start the application, run `docker-compose up -d`. To stop the application, run
+`docker-compose down -v`. The frontend will run at http://localhost:3000 while the backend will run at
 http://localhost:8000. Any code changes should auto-reload the application.
 
 For Google OAuth login, you must create a `.env` file in the `backend` directory. It should look
