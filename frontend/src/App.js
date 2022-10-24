@@ -5,7 +5,6 @@ import Navbar from "./components/navbar";
 import { Provider } from "react-redux";
 import store from "./redux/store";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
-import Login from "./pages/login";
 
 function App() {
     // See this tutorial for info on how to use react router (they recently changed the entire API in v6).
@@ -32,10 +31,6 @@ function App() {
                 {
                     path: "profile",
                     element: <Profile></Profile>,
-                },
-                {
-                    path: "login",
-                    element: <Login></Login>,
                 },
             ],
         },

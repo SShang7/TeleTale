@@ -1,19 +1,18 @@
 import { Avatar, Card, CardContent, CircularProgress, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
-import { useLocation, Navigate } from "react-router-dom";
+import { showGoogleLogin } from "../helpers";
 
 function Profile() {
     const profile = useSelector((state) => {
         return state;
     });
 
-    let location = useLocation();
-
     if (!profile) {
         return <CircularProgress />;
     }
     if (!profile.isLoggedIn) {
-        return <Navigate to="/login" state={{ from: location }} replace />;
+        showGoogleLogin();
+        return <></>;
     }
     return (
         <Card style={{ width: "40%", margin: "0 auto" }}>

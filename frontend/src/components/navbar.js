@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { showGoogleLogin } from "../helpers";
 
 function Navbar() {
     // This code snippet is heavily inspired by this part of the react MUI docs.
@@ -124,7 +125,7 @@ function Navbar() {
                             </>
                         ) : (
                             <Button
-                                onClick={() => navigate("/login")}
+                                onClick={showGoogleLogin}
                                 sx={{ my: 2, color: "white", display: "block" }}
                             >
                                 Login
