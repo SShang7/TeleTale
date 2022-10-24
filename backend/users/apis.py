@@ -1,3 +1,5 @@
+import logging
+
 from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework import serializers
@@ -15,22 +17,27 @@ from .selectors import user_get_me
 
 
 class UserProfileApi(ApiAuthMixin, ApiErrorsMixin, APIView):
+    _logger = logging.getLogger(__name__)
+
     def get(self, request, *args, **kwargs):
         user = request.user
         try:
             profile = Profile.objects.get(user=user)
         except ObjectDoesNotExist:
-            profile = Profile(user=user, display_name=user.first_name, bio="")
-            profile.save()
+            self._logger.error(f"Profile for user {user} does not exist.")
+            return Response(status=404)
 
         return Response({
             "name": profile.display_name,
             "email": user.email,
             "bio": profile.bio,
+            "profilePicture": profile.profile_pic,
         })
 
 
 class UserInitApi(PublicApiMixin, ApiErrorsMixin, APIView):
+    _logger = logging.getLogger(__name__)
+
     class InputSerializer(serializers.Serializer):
         email = serializers.EmailField()
         first_name = serializers.CharField(required=False, default='')
