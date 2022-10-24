@@ -17,6 +17,8 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 function Navbar() {
     // This code snippet is heavily inspired by this part of the react MUI docs.
     // https://mui.com/material-ui/react-app-bar/#app-bar-with-responsive-menu
+
+    // eslint-disable-next-line no-unused-vars
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
     const navigate = useNavigate();
@@ -24,6 +26,7 @@ function Navbar() {
     const pages = [{ name: "Profile", link: "/profile" }];
     const settings = ["Profile", "Logout"];
 
+    // eslint-disable-next-line no-unused-vars
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
     };
