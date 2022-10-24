@@ -1,3 +1,4 @@
+import profile
 from urllib.parse import urlencode
 
 from rest_framework import status, serializers
@@ -60,8 +61,8 @@ class GoogleLoginApi(PublicApiMixin, ApiErrorsMixin, APIView):
         profile_data = {
             'email': user_data['email'],
             'username': user_data['email'],
-            'first_name': user_data.get('givenName', ''),
-            'last_name': user_data.get('familyName', ''),
+            'first_name': user_data.get('given_name', ''),
+            'last_name': user_data.get('family_name', ''),
         }
 
         # We use get-or-create logic here for the sake of the example.
@@ -75,13 +76,13 @@ class GoogleLoginApi(PublicApiMixin, ApiErrorsMixin, APIView):
 
 
 class LogoutApi(ApiAuthMixin, ApiErrorsMixin, APIView):
-    def post(self, request):
+    def get(self, request):
         """
         Logs out user by removing JWT cookie header.
         """
         user_change_secret_key(user=request.user)
 
-        response = Response(status=status.HTTP_202_ACCEPTED)
+        response = redirect(settings.BASE_FRONTEND_URL)
         response.delete_cookie(settings.JWT_AUTH['JWT_AUTH_COOKIE'])
 
         return response

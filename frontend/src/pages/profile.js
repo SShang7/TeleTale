@@ -1,23 +1,26 @@
-
-import "./style.css"
+import { Avatar, Card, CardContent, CircularProgress, Typography } from "@mui/material";
+import { useSelector } from "react-redux";
+import { showGoogleLogin } from "../helpers";
 
 function Profile() {
+    const profile = useSelector((state) => state);
+
+    if (!profile) {
+        return <CircularProgress />;
+    }
+    if (!profile.isLoggedIn) {
+        showGoogleLogin();
+        return <></>;
+    }
     return (
-        <div>
-            <link
-                rel="stylesheet"
-                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-            />
-            <div className="card">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f7/Facebook_default_male_avatar.gif" alt="John" style={{ width: "100%" }} />
-                <h1>FirstName LastName</h1>
-                <p className="email">ThisIsMyEmail@mail.com</p>
-                <p>This is my bio, This is my bio, This is my bio, This is my bio, This is my bio</p>
-                <p>
-                <button>Save</button>
-                </p>
-            </div>
-        </div>
+        <Card sx={{ width: "40%", margin: "0 auto" }}>
+            <CardContent>
+                <Avatar src={profile.profilePicture} alt={profile.name} />
+                <Typography variant="h3">{profile.name}</Typography>
+                <Typography variant="body2">{profile.email}</Typography>
+                <Typography variant="body2">{profile.bio}</Typography>
+            </CardContent>
+        </Card>
     );
 }
 
