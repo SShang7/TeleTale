@@ -1,4 +1,4 @@
-import profile
+import logging
 from urllib.parse import urlencode
 
 from rest_framework import status, serializers
@@ -16,8 +16,12 @@ from users.services import user_change_secret_key, user_get_or_create
 
 from auth.services import jwt_login, google_get_access_token, google_get_user_info
 
+from profiles.models import Profile
+
 
 class LoginApi(ApiErrorsMixin, ObtainJSONWebTokenView):
+    _logger = logging.getLogger(__name__)
+
     def post(self, request, *args, **kwargs):
         # Reference: https://github.com/Styria-Digital/django-rest-framework-jwt/blob/master/src/rest_framework_jwt/views.py#L44
         serializer = self.get_serializer(data=request.data)
@@ -30,6 +34,8 @@ class LoginApi(ApiErrorsMixin, ObtainJSONWebTokenView):
 
 
 class GoogleLoginApi(PublicApiMixin, ApiErrorsMixin, APIView):
+    _logger = logging.getLogger(__name__)
+
     class InputSerializer(serializers.Serializer):
         code = serializers.CharField(required=False)
         error = serializers.CharField(required=False)
@@ -46,6 +52,7 @@ class GoogleLoginApi(PublicApiMixin, ApiErrorsMixin, APIView):
         login_url = f'{settings.BASE_FRONTEND_URL}/login'
 
         if error or not code:
+            self._logger.error(f"Error occurred while logging in user through OAuth: {error}")
             params = urlencode({'error': error})
             return redirect(f'{login_url}?{params}')
 
@@ -69,6 +76,15 @@ class GoogleLoginApi(PublicApiMixin, ApiErrorsMixin, APIView):
         # We don't have a sign-up flow.
         user, _ = user_get_or_create(**profile_data)
 
+        if not Profile.objects.filter(user=user).exists():
+            self._logger.debug(f"Creating new profile for user {profile_data}.")
+            profile = Profile(
+                user=user,
+                display_name=user.first_name,
+                bio="Hello, there!",
+                profile_pic=user_data['picture'])
+            profile.save()
+
         response = redirect(settings.BASE_FRONTEND_URL)
         response = jwt_login(response=response, user=user)
 
@@ -76,6 +92,8 @@ class GoogleLoginApi(PublicApiMixin, ApiErrorsMixin, APIView):
 
 
 class LogoutApi(ApiAuthMixin, ApiErrorsMixin, APIView):
+    _logger = logging.getLogger(__name__)
+
     def get(self, request):
         """
         Logs out user by removing JWT cookie header.

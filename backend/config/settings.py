@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from calendar import c
 import datetime
 import environ
+import logging
 from pathlib import Path
 
 import django
@@ -97,6 +98,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Logging
 
+logging.getLogger("urllib3").propagate = False
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
