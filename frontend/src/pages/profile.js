@@ -3,9 +3,7 @@ import { useSelector } from "react-redux";
 import { showGoogleLogin } from "../helpers";
 
 function Profile() {
-    const profile = useSelector((state) => {
-        return state;
-    });
+    const profile = useSelector((state) => state);
 
     if (!profile) {
         return <CircularProgress />;
@@ -15,7 +13,7 @@ function Profile() {
         return <></>;
     }
     return (
-        <Card style={{ width: "40%", margin: "0 auto" }}>
+        <Card sx={{ width: "40%", margin: "0 auto" }}>
             <CardContent>
                 <Avatar src={profile.profilePicture} alt={profile.name} />
                 <Typography variant="h3">{profile.name}</Typography>

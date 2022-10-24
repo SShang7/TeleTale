@@ -63,9 +63,7 @@ function Navbar() {
         },
     ];
 
-    const profile = useSelector((state) => {
-        return state;
-    });
+    const profile = useSelector((state) => state);
 
     return (
         <AppBar position="static">
