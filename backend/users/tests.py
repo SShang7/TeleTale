@@ -11,23 +11,38 @@ from profiles.models import Profile
 
 class ProfileTestCase(TestCase):
     def setUp(self):
-        User.objects.create(username='joebruin', email='jbruin@ucla.edu',
-                            first_name='Joe', last_name='Bruin')
+        self.user = User.objects.create(
+            username='joebruin',
+            email='jbruin@ucla.edu',
+            first_name='Joe',
+            last_name='Bruin')
+        Profile.objects.create(
+            user=self.user,
+            display_name=self.user.first_name,
+            bio='Hello, there!',
+            profile_pic='')
 
-    def test_profile_dne(self):
-        """Profile should not exist yet for a new user and should raise a DoesNotExist exception"""
-        user = User.objects.get(username='joebruin')
-        self.assertRaises(Profile.DoesNotExist, Profile.objects.get, user=user)
-
-    def test_profile_creation(self):
-        """Profile gets created and is returned on GET request"""
+    def test_get_profile(self):
+        """Profile data should be returned from a GET request to the /api/v1/users/profile endpoint"""
         client = APIClient()
-        user = User.objects.get(username='joebruin')
-        client.force_authenticate(user=user)
-
+        client.force_authenticate(user=self.user)
+        
         response = client.get(reverse('api:v1:users:profile'))
         self.assertEqual(response.json(), {
             'name': 'Joe',
             'email': 'jbruin@ucla.edu',
-            'bio': ''
+            'bio': 'Hello, there!',
+            'profilePicture': ''
         })
+
+    def test_profile_needs_authentication(self):
+        """User must be authenticated to access the profile endpoint"""
+        client = APIClient()
+
+        response = client.get(reverse('api:v1:users:profile'))
+        self.assertTrue(response.status_code == 401)
+
+    def test_profile_deleted_on_user_delete(self):
+        """Profile should be deleted when its user is deleted"""
+        self.user.delete()
+        self.assertRaises(Profile.DoesNotExist, Profile.objects.get, user=self.user)
