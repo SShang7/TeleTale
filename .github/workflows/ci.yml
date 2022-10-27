@@ -11,6 +11,9 @@ jobs:
         run: docker-compose up -d
       - name: Test Backend
         run: docker-compose exec -T backend python3 manage.py test
+        continue-on-error: true
+      - name: Logs
+        run: docker-compose logs
       - name: Build Frontend
         run: docker-compose exec -T frontend npm run build
       - name: Test Frontend
