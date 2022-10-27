@@ -1,6 +1,8 @@
 # TeleTale
 Game that you play with your friends to author your own picture book!
 
+[![CI Workflow](https://github.com/SShang7/TeleTale/actions/workflows/ci.yml/badge.svg)](https://github.com/SShang7/TeleTale/actions/workflows/ci.yml)
+
 ## Setup and development
 
 We use [Docker](https://docs.docker.com/get-docker/) to containerize the application and maintain a
