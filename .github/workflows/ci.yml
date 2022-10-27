@@ -10,10 +10,8 @@ jobs:
       - name: Start docker containers
         run: docker-compose up -d
       - name: Test Backend
-        run: docker-compose exec -T backend echo 'SEND HELP...'
-      - name: Test Backend
         run: docker-compose exec -T backend python3 manage.py test
       - name: Build Frontend
         run: docker-compose exec -T frontend npm run build
       - name: Test Frontend
-        run: docker-compose exec -T frontend npm test 
+        run: docker-compose exec -T frontend npm test
