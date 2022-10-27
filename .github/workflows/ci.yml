@@ -1,0 +1,17 @@
+name: CI Workflow
+on: push
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install docker-compose
+        run: sudo apt update && sudo apt-get install -y docker-compose
+      - uses: actions/checkout@v2
+      - name: Start docker containers
+        run: docker-compose up -d
+      - name: Test Backend
+        run: docker-compose exec -T backend python3 manage.py test
+      - name: Build Frontend
+        run: docker-compose exec -T frontend npm run build
+      - name: Test Frontend
+        run: docker-compose exec -T frontend npm test 
