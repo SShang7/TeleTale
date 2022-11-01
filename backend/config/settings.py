@@ -55,13 +55,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'channels',
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
-
     'rest_framework_jwt',
 
     'profiles',
+    'game',
 ]
 
 MIDDLEWARE = [
@@ -93,12 +94,19 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = 'config.asgi.application'
 WSGI_APPLICATION = 'config.wsgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': "channels.layers.InMemoryChannelLayer"
+        }
+    }
 
 
 # Logging
 
 logging.getLogger("urllib3").propagate = False
+logging.getLogger("daphne").propagate = False
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

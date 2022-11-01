@@ -7,3 +7,11 @@ class Profile(models.Model):
     display_name = models.CharField(max_length=45, default="")
     bio = models.TextField(blank=True)
     profile_pic = models.URLField()
+
+    def as_json(self):
+        return {
+            'user': self.user.username,
+            'display_name': self.display_name,
+            'bio': self.bio,
+            'profile_pic': self.profile_pic,
+        }
