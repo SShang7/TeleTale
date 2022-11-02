@@ -28,8 +28,6 @@ class LoginApi(ApiErrorsMixin, ObtainJSONWebTokenView):
 
         serializer.is_valid(raise_exception=True)
 
-        user = serializer.object.get('user') or request.user
-
         return super().post(request, *args, **kwargs)
 
 
