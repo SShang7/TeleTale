@@ -1,4 +1,7 @@
 from django.db import models
+
+from channels.db import database_sync_to_async
+
 from profiles.models import Profile
 
 # Create your models here.
@@ -17,11 +20,15 @@ class Game(models.Model):
     timer = models.PositiveSmallIntegerField(default=30)
     prompt = models.TextField(default="Write about anything you want to start your story!")
 
+    @database_sync_to_async
     def as_json(self):
         return {
             'id': self.game_id,
             'gameStatus': self.game_status,
-            'currentPlayer': GamePlayer.objects.get(game=self).filter(is_current_player=True)[0].profile.as_json(),
+            'currentPlayer': GamePlayer.objects
+                    .filter(game=self)[0] # TODO: shoulf filter by is_current=True
+                    .profile
+                    .as_json(),
             'numRounds': self.num_rounds,
             'currentRound': self.current_round,
             'currentTurn': self.current_turn,

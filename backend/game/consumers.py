@@ -1,5 +1,7 @@
 from random import shuffle
 
+from django.contrib.auth.models import User
+
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
@@ -9,7 +11,9 @@ from profiles.models import Profile
 class GameConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         self.game_id = self.scope['url_route']['kwargs']['game_id']
-        self.user = self.scope['user']
+        # TODO: user authentication is broken
+        # self.user = self.scope['user']
+        await self.set_user()
 
         # Create game and player objects and accept connection
         await self.create_game()
@@ -24,13 +28,17 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         )
 
     @database_sync_to_async
+    def set_user(self):
+        self.user = User.objects.get(username='alex')
+
+    @database_sync_to_async
     def create_game(self):
-        self.game = Game.objects.get(game_id=self.game_id)
+        self.game, _ = Game.objects.get_or_create(game_id=self.game_id)
 
     @database_sync_to_async
     def create_player(self):
         profile = Profile.objects.get(user=self.user)
-        self.player = GamePlayer.objects.get_or_create(profile=profile, game=self.game)
+        self.player, _ = GamePlayer.objects.get_or_create(profile=profile, game=self.game)
 
     @database_sync_to_async
     def set_players(self):
@@ -69,7 +77,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                 self.room_group_name,
                 {
                     'command': command,
-                    'info': f'{self.player.profile.display_name} has joined',
+                    'info': f'{await self.get_profile_name()} has joined',
                     'type': 'websocket_info',
                 }
             )
@@ -102,6 +110,10 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                     'user': content.get('user', None),
                 }
             )
+
+    @database_sync_to_async
+    def get_profile_name(self):
+        return self.player.profile.display_name
 
     @database_sync_to_async
     def setup_game(self):
@@ -143,13 +155,13 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json(({
             'command': event['command'],
             'info': event['info'],
-            'players': [x.profile.as_json() for x in self.all_players],
+            'players': [await x.profile.as_json() for x in self.all_players],
         }))
 
     async def websocket_info(self, event):
         await self.send_json(({
             'command': event['command'],
-            'gameState': self.game.as_json(),
+            'gameState': await self.game.as_json(),
         }))
 
     async def websocket_chat(self, event):
