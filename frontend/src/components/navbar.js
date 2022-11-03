@@ -47,7 +47,7 @@ function Navbar() {
         };
     };
 
-    const pages = [{ name: "Profile", link: "/profile" }];
+    const pages = [{name: "Create Game", link: "/lobby"}, { name: "Profile", link: "/profile" } ];
     const settings = [
         {
             name: "Profile",
