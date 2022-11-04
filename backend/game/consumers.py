@@ -70,6 +70,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             f'{self.user.username} disconnected from game {self.game_id}.')
 
         # Leave the game room
+        await self.delete_player()
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -78,14 +79,17 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             }
         )
 
-        await self.delete_player()
-
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
 
+    @database_sync_to_async
+    def refresh_game_state(self):
+        self.game = Game.objects.get(game_id=self.game_id)
+
     async def receive_json(self, content):
+        await self.refresh_game_state()
         command = content.get("command", None)
 
         if command == 'join' and self.game.game_status == Game.GameStatus.CREATED:
@@ -199,6 +203,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
     async def websocket_leave(self, event):
         await self.set_players()
+        await self.refresh_game_state()
         await self.send_json(({
             'command': 'leave',
             'info': event['info'],
