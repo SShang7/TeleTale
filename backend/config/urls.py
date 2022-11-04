@@ -25,7 +25,7 @@ schema_view = get_schema_view(
     openapi.Info(
         title="TeleTale API",
         default_version='v1',
-        description="API scheme for the TeleTale backend.",
+        description="API schema for the TeleTale backend.",
         license=openapi.License(name="MIT License"),
     ),
     public=True,
