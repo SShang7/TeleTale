@@ -12,7 +12,7 @@ class Profile(models.Model):
 
     def as_json(self):
         return {
-            'user': self.user.username,
+            'id': self.id,
             'display_name': self.display_name,
             'bio': self.bio,
             'profile_pic': self.profile_pic,

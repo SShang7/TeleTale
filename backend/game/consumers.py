@@ -1,3 +1,4 @@
+import logging
 from random import shuffle
 
 from channels.db import database_sync_to_async
@@ -8,9 +9,14 @@ from profiles.models import Profile
 
 
 class GameConsumer(AsyncJsonWebsocketConsumer):
+    _logger = logging.getLogger(__name__)
+
     async def connect(self):
         self.game_id = self.scope['url_route']['kwargs']['game_id']
         self.user = self.scope['user']
+
+        self._logger.debug(
+            f'User {self.user.username} has joined game {self.game_id}')
 
         # Create game and player objects and accept connection
         await self.create_game()
@@ -26,7 +32,12 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
     @database_sync_to_async
     def create_game(self):
-        self.game, _ = Game.objects.get_or_create(game_id=self.game_id)
+        self.game, is_created = Game.objects.get_or_create(
+            game_id=self.game_id)
+
+        if is_created:
+            self.game.owner = Profile.objects.get(user=self.user)
+            self.game.save()
 
     @database_sync_to_async
     def create_player(self):
@@ -41,13 +52,23 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
     @database_sync_to_async
     def delete_player(self):
-        # TODO: need to reset deque
+        # TODO: need to delete player from turns (i.e. a circular queue)
         self.player.delete()
-        player_count = self.game.gameplayer_set.all().count()
-        if player_count == 0:
+
+        all_players = self.game.gameplayer_set.all()
+
+        if all_players.count() == 0:
+            self._logger.debug(
+                f'Game {self.game_id} has zero players and will be deleted.')
             self.game.delete()
+        else:
+            self.game.owner = all_players[0].profile
+            self.game.save()
 
     async def disconnect(self, close_code):
+        self._logger.debug(
+            f'{self.user.username} disconnected from game {self.game_id}.')
+
         # Leave the game room
         await self.channel_layer.group_send(
             self.room_group_name,
@@ -120,11 +141,16 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         previous.is_current = True
         previous.is_first = True
 
+        previous.save()
+
         for player in players[1:]:
             previous.next_player = player
+            previous.save()
         players[-1].next_player = players[0]
+        players[-1].save()
 
         self.game.game_status = Game.GameStatus.IN_PROGRESS
+        self.game.save()
 
     @database_sync_to_async
     def write_phrase(self, content):
@@ -139,13 +165,16 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
         # Update round information
         self.player.is_current = False
-        self.next_player.is_current = True
+        self.player.save()
 
-        if self.next_player.is_first:
+        next_player = self.player.next_player
+        next_player.is_current = True
+        if next_player.is_first:
             self.game.current_round += 1
             self.game.current_turn = 1
         else:
             self.game.current_turn += 1
+        self.game.save()
 
     async def websocket_join(self, event):
         await self.set_players()

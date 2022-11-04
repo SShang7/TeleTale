@@ -12,9 +12,11 @@ class Game(models.Model):
         FINISHED = 'Finished', ('Finished')
 
     game_id = models.CharField(max_length=50, primary_key=True)
+    owner = models.OneToOneField(Profile, null=True, on_delete=models.SET_NULL)
     time_created = models.DateTimeField(auto_now=True)
     game_status = models.TextField(
         choices=GameStatus.choices, default=GameStatus.CREATED)
+
     num_rounds = models.PositiveSmallIntegerField(default=4)
     current_round = models.PositiveSmallIntegerField(default=1)
     current_turn = models.PositiveSmallIntegerField(default=1)
@@ -24,7 +26,7 @@ class Game(models.Model):
 
     @database_sync_to_async
     def as_json(self):
-        current_player = None if self.game_status == self.GameStatus.IN_PROGRESS else (
+        current_player = None if self.game_status != self.GameStatus.IN_PROGRESS else (
             GamePlayer
             .objects
             .filter(game=self, is_current=True)[0]
@@ -33,6 +35,7 @@ class Game(models.Model):
         return {
             'id': self.game_id,
             'gameStatus': self.game_status,
+            'owner': self.owner.as_json() if self.owner else None,
             'currentPlayer': current_player,
             'allPlayers': [p.profile.as_json() for p in GamePlayer.objects.filter(game=self)],
             'numRounds': self.num_rounds,
