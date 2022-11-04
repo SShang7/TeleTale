@@ -4,7 +4,7 @@ from channels.db import database_sync_to_async
 
 from profiles.models import Profile
 
-# Create your models here.
+
 class Game(models.Model):
     class GameStatus(models.TextChoices):
         CREATED = 'Created', ('Created')
@@ -13,20 +13,22 @@ class Game(models.Model):
 
     game_id = models.CharField(max_length=50, primary_key=True)
     time_created = models.DateTimeField(auto_now=True)
-    game_status = models.TextField(choices=GameStatus.choices, default=GameStatus.CREATED)
+    game_status = models.TextField(
+        choices=GameStatus.choices, default=GameStatus.CREATED)
     num_rounds = models.PositiveSmallIntegerField(default=4)
     current_round = models.PositiveSmallIntegerField(default=1)
     current_turn = models.PositiveSmallIntegerField(default=1)
     timer = models.PositiveSmallIntegerField(default=30)
-    prompt = models.TextField(default="Write about anything you want to start your story!")
+    prompt = models.TextField(
+        default="Write about anything you want to start your story!")
 
     @database_sync_to_async
     def as_json(self):
         current_player = None if self.game_status == self.GameStatus.IN_PROGRESS else (
             GamePlayer
-                .objects
-                .filter(game=self, is_current=True)[0]
-                .profile.as_json())
+            .objects
+            .filter(game=self, is_current=True)[0]
+            .profile.as_json())
 
         return {
             'id': self.game_id,

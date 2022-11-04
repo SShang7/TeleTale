@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .apis  import UserProfileApi, UserInitApi
+from .apis import UserProfileApi, UserInitApi
 
 
 urlpatterns = [

@@ -6,6 +6,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from .models import Game, GamePhrase, GamePlayer
 from profiles.models import Profile
 
+
 class GameConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         self.game_id = self.scope['url_route']['kwargs']['game_id']
@@ -30,7 +31,8 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
     @database_sync_to_async
     def create_player(self):
         profile = Profile.objects.get(user=self.user)
-        self.player, _ = GamePlayer.objects.get_or_create(profile=profile, game=self.game)
+        self.player, _ = GamePlayer.objects.get_or_create(
+            profile=profile, game=self.game)
 
     @database_sync_to_async
     def set_players(self):

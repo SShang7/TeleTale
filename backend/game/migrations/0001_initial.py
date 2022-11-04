@@ -16,36 +16,44 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Game',
             fields=[
-                ('game_id', models.CharField(max_length=50, primary_key=True, serialize=False)),
+                ('game_id', models.CharField(
+                    max_length=50, primary_key=True, serialize=False)),
                 ('time_created', models.DateTimeField(auto_now=True)),
-                ('game_status', models.TextField(choices=[('Created', 'Created'), ('In Progress', 'In Progress'), ('Finished', 'Finished')], default='Created')),
+                ('game_status', models.TextField(choices=[('Created', 'Created'), (
+                    'In Progress', 'In Progress'), ('Finished', 'Finished')], default='Created')),
                 ('num_rounds', models.PositiveSmallIntegerField(default=4)),
                 ('current_round', models.PositiveSmallIntegerField(default=1)),
                 ('current_turn', models.PositiveSmallIntegerField(default=1)),
                 ('timer', models.PositiveSmallIntegerField(default=30)),
-                ('prompt', models.TextField(default='Write about anything you want to start your story!')),
+                ('prompt', models.TextField(
+                    default='Write about anything you want to start your story!')),
             ],
         ),
         migrations.CreateModel(
             name='GamePlayer',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('is_current', models.BooleanField(default=False)),
                 ('is_first', models.BooleanField(default=False)),
-                ('game', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='game.game')),
+                ('game', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='game.game')),
                 ('next_player', models.ManyToManyField(to='game.gameplayer')),
-                ('profile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='profiles.profile')),
+                ('profile', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='profiles.profile')),
             ],
         ),
         migrations.CreateModel(
             name='GamePhrase',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('round_number', models.PositiveSmallIntegerField()),
                 ('turn_number', models.PositiveSmallIntegerField()),
                 ('phrase', models.TextField()),
                 ('image', models.ImageField(upload_to='')),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='game.gameplayer')),
+                ('author', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='game.gameplayer')),
             ],
         ),
     ]

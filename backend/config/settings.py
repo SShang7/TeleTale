@@ -39,8 +39,10 @@ SECRET_KEY = 'django-insecure-v*k0fc%)gup4e!3dygj_5vqpoi1sgkohb^m+%1n36lh@uv@j9w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-BASE_BACKEND_URL = env.str('DJANGO_BASE_BACKEND_URL', default='http://localhost:8000')
-BASE_FRONTEND_URL = env.str('DJANGO_BASE_FRONTEND_URL', default='http://localhost:3000')
+BASE_BACKEND_URL = env.str('DJANGO_BASE_BACKEND_URL',
+                           default='http://localhost:8000')
+BASE_FRONTEND_URL = env.str(
+    'DJANGO_BASE_FRONTEND_URL', default='http://localhost:3000')
 
 ALLOWED_HOSTS = []
 
@@ -99,8 +101,8 @@ WSGI_APPLICATION = 'config.wsgi.application'
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': "channels.layers.InMemoryChannelLayer"
-        }
     }
+}
 
 
 # Logging

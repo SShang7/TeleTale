@@ -26,7 +26,7 @@ class ProfileTestCase(TestCase):
         """Profile data should be returned from a GET request to the /api/v1/users/profile endpoint"""
         client = APIClient()
         client.force_authenticate(user=self.user)
-        
+
         response = client.get(reverse('api:v1:users:profile'))
         self.assertEqual(response.json(), {
             'name': 'Joe',
@@ -45,4 +45,5 @@ class ProfileTestCase(TestCase):
     def test_profile_deleted_on_user_delete(self):
         """Profile should be deleted when its user is deleted"""
         self.user.delete()
-        self.assertRaises(Profile.DoesNotExist, Profile.objects.get, user=self.user)
+        self.assertRaises(Profile.DoesNotExist,
+                          Profile.objects.get, user=self.user)

@@ -6,7 +6,7 @@ from rest_framework.test import APIClient
 
 from config.settings import BASE_FRONTEND_URL
 
-# Create your tests here.
+
 class ProfileTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
@@ -29,12 +29,12 @@ class ProfileTestCase(TestCase):
         self.assertTrue(response.status_code == 201)
         self.assertTrue('token' in response.data)
         self.assertDictEqual(response.data['me'],
-            {
-                'id': 1,
-                'first_name': 'Joe',
-                'last_name': 'Bruin',
-                'email': 'joebruin@ucla.edu',
-            })
+        {
+            'id': 1,
+            'first_name': 'Joe',
+            'last_name': 'Bruin',
+            'email': 'joebruin@ucla.edu',
+        })
 
     def test_logout(self):
         """Logout API should redirect user to the frontend URL"""

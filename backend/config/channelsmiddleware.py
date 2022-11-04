@@ -11,6 +11,7 @@ from channels.db import database_sync_to_async
 from http.cookies import SimpleCookie
 from jwt.exceptions import InvalidSignatureError
 
+
 @database_sync_to_async
 def get_user(validated_token):
     try:
@@ -34,10 +35,11 @@ class JwtAuthMiddleware(BaseMiddleware):
         close_old_connections()
 
         # Get the token
-        headers = { k.decode('utf8') : v.decode('utf8') for (k, v) in scope['headers'] }
+        headers = {k.decode('utf8'): v.decode('utf8')
+                   for (k, v) in scope['headers']}
         cookie = SimpleCookie()
         cookie.load(headers['cookie'])
-        cookies = { k : v.value for k, v in cookie.items() }
+        cookies = {k: v.value for k, v in cookie.items()}
         token = cookies['jwt_token']
 
         #  Then token is valid, decode it
