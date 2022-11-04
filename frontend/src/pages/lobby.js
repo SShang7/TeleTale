@@ -41,7 +41,6 @@ function Lobby() {
     useEffect(() => {
         if (lastMessage) {
             const data = JSON.parse(lastMessage.data);
-            console.log(data);
             if (data.hasOwnProperty("gameState")) {
                 setGameState(data.gameState);
             }
