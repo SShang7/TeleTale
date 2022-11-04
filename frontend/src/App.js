@@ -2,6 +2,7 @@ import React from "react";
 import Profile from "./pages/profile";
 import Lobby from "./pages/lobby";
 import Home from "./pages/home";
+import OtherUser from "./pages/otherUser";
 import Navbar from "./components/navbar";
 import { Provider } from "react-redux";
 import store from "./redux/store";
@@ -34,9 +35,13 @@ function App() {
                     element: <Profile></Profile>,
                 },
                 {
+                    path: "profile/:id",
+                    element: <OtherUser></OtherUser>,
+                },
+                {
                     path: "lobby",
                     element: <Lobby></Lobby>,
-                }
+                },
             ],
         },
     ]);

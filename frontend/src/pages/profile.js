@@ -1,5 +1,6 @@
-import { Avatar, Card, CardContent, CircularProgress, Typography } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import { useSelector } from "react-redux";
+import UserProfile from "../components/userProfile";
 import { showGoogleLogin } from "../helpers";
 
 function Profile() {
@@ -12,16 +13,7 @@ function Profile() {
         showGoogleLogin();
         return <></>;
     }
-    return (
-        <Card sx={{ width: "40%", margin: "0 auto" }}>
-            <CardContent>
-                <Avatar src={profile.profilePicture} alt={profile.name} />
-                <Typography variant="h3">{profile.name}</Typography>
-                <Typography variant="body2">{profile.email}</Typography>
-                <Typography variant="body2">{profile.bio}</Typography>
-            </CardContent>
-        </Card>
-    );
+    return <UserProfile profile={profile} />;
 }
 
 export default Profile;
