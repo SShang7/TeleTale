@@ -35,6 +35,25 @@ class UserProfileApi(ApiAuthMixin, ApiErrorsMixin, APIView):
         })
 
 
+class UserQueryProfileApi(ApiErrorsMixin, APIView):
+    _logger = logging.getLogger(__name__)
+
+    def get(self, request, *args, **kwargs):
+        id_to_find = kwargs['id']
+        try:
+            profile = Profile.objects.get(id=id_to_find)
+        except ObjectDoesNotExist:
+            self._logger.error(
+                f"Profile for user id {id_to_find} does not exist.")
+            return Response(status=404)
+
+        return Response({
+            "name": profile.display_name,
+            "bio": profile.bio,
+            "profilePicture": profile.profile_pic,
+        })
+
+
 class UserInitApi(PublicApiMixin, ApiErrorsMixin, APIView):
     _logger = logging.getLogger(__name__)
 
