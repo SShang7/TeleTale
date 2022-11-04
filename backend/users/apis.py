@@ -28,6 +28,7 @@ class UserProfileApi(ApiAuthMixin, ApiErrorsMixin, APIView):
             return Response(status=404)
 
         return Response({
+            "id": profile.id,
             "name": profile.display_name,
             "email": user.email,
             "bio": profile.bio,

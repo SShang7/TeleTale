@@ -2,10 +2,12 @@ import React from "react";
 import Profile from "./pages/profile";
 import Lobby from "./pages/lobby";
 import Home from "./pages/home";
+import OtherUser from "./pages/otherUser";
 import Navbar from "./components/navbar";
 import { Provider } from "react-redux";
 import store from "./redux/store";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
+import { Container } from "@mui/material";
 
 function App() {
     // See this tutorial for info on how to use react router (they recently changed the entire API in v6).
@@ -15,7 +17,9 @@ function App() {
         return (
             <>
                 <Navbar></Navbar>
-                <Outlet></Outlet>
+                <Container sx={{ mt: 2 }}>
+                    <Outlet></Outlet>
+                </Container>
             </>
         );
     };
@@ -34,9 +38,13 @@ function App() {
                     element: <Profile></Profile>,
                 },
                 {
+                    path: "profile/:id",
+                    element: <OtherUser></OtherUser>,
+                },
+                {
                     path: "lobby",
                     element: <Lobby></Lobby>,
-                }
+                },
             ],
         },
     ]);
