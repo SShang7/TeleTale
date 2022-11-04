@@ -1,7 +1,5 @@
 from random import shuffle
 
-from django.contrib.auth.models import User
-
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
@@ -11,9 +9,7 @@ from profiles.models import Profile
 class GameConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         self.game_id = self.scope['url_route']['kwargs']['game_id']
-        # TODO: user authentication is broken
-        # self.user = self.scope['user']
-        await self.set_user()
+        self.user = self.scope['user']
 
         # Create game and player objects and accept connection
         await self.create_game()
@@ -28,10 +24,6 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         )
 
     @database_sync_to_async
-    def set_user(self):
-        self.user = User.objects.get(username='alex')
-
-    @database_sync_to_async
     def create_game(self):
         self.game, _ = Game.objects.get_or_create(game_id=self.game_id)
 
@@ -42,13 +34,14 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
     @database_sync_to_async
     def set_players(self):
-        self.all_players = list(self.game.gameplayers_set.all())
+        players = list(self.game.gameplayer_set.all())
+        self.all_players = [x.profile.as_json() for x in players]
 
     @database_sync_to_async
     def delete_player(self):
         # TODO: need to reset deque
         self.player.delete()
-        player_count = self.game.gameplayers_set.all().count()
+        player_count = self.game.gameplayer_set.all().count()
         if player_count == 0:
             self.game.delete()
 
@@ -82,6 +75,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                 }
             )
         if command == 'start':
+            # TODO
             await self.setup_game()
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -91,6 +85,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                 }
             )
         if command == 'submit':
+            # TODO
             await self.write_phrase(content)
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -118,7 +113,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
     @database_sync_to_async
     def setup_game(self):
         # Shuffle the order of players and create circular queue of players
-        players = shuffle(list(self.game.gameplayers_set.all()))
+        players = shuffle(list(self.game.gameplayer_set.all()))
         previous = players[0]
         previous.is_current = True
         previous.is_first = True
@@ -155,7 +150,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json(({
             'command': event['command'],
             'info': event['info'],
-            'players': [await x.profile.as_json() for x in self.all_players],
+            'players': self.all_players,
         }))
 
     async def websocket_info(self, event):
@@ -174,7 +169,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
     async def websocket_leave(self, event):
         await self.set_players()
         await self.send_json(({
-            'command': 'left',
+            'command': 'leave',
             'info': event['info'],
-            'players': [x.profile.as_json() for x in self.all_players],
+            'gameState': await self.game.as_json(),
         }))

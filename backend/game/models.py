@@ -22,13 +22,17 @@ class Game(models.Model):
 
     @database_sync_to_async
     def as_json(self):
+        current_player = None if self.game_status == self.GameStatus.IN_PROGRESS else (
+            GamePlayer
+                .objects
+                .filter(game=self, is_current=True)[0]
+                .profile.as_json())
+
         return {
             'id': self.game_id,
             'gameStatus': self.game_status,
-            'currentPlayer': GamePlayer.objects
-                    .filter(game=self)[0] # TODO: shoulf filter by is_current=True
-                    .profile
-                    .as_json(),
+            'currentPlayer': current_player,
+            'allPlayers': [p.profile.as_json() for p in GamePlayer.objects.filter(game=self)],
             'numRounds': self.num_rounds,
             'currentRound': self.current_round,
             'currentTurn': self.current_turn,

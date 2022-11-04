@@ -16,17 +16,19 @@ import { useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
 
 function Lobby() {
+    // TODO: generate game ID
     const socketUrl = "ws://localhost:8000/ws/play/abcdef";
-
     const profile = useSelector((state) => state);
+
     function profileExists() {
         if (!profile || !profile.isLoggedIn) return "Debug";
         return profile.name;
     }
-    const [owner, setOwner] = useState(profileExists);
-    const [players, setPlayers] = useState([owner, "placeholder"]);
 
-    const [gameState, setGameState] = useState({});
+    // eslint-disable-next-line no-unused-vars
+    const [owner, setOwner] = useState(profileExists);
+    const [gameState, setGameState] = useState(null);
+    const { sendMessage, lastMessage } = useWebSocket(socketUrl);
 
     useEffect(() => {
         sendMessage(
@@ -34,32 +36,43 @@ function Lobby() {
                 command: "join",
             })
         );
-    });
+    }, [sendMessage]);
 
-    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
     useEffect(() => {
-        console.log(lastMessage);
-        // setGameState();
+        if (lastMessage) {
+            const data = JSON.parse(lastMessage.data);
+            console.log(data);
+            if (data.hasOwnProperty("gameState")) {
+                setGameState(data.gameState);
+            }
+        }
     }, [lastMessage, setGameState]);
 
     if (!profile) {
         return <CircularProgress />;
     }
+
     if (!profile.isLoggedIn) {
         showGoogleLogin();
         return <></>;
     }
+
     const playerList = () => {
+        if (!gameState) {
+            return <List></List>;
+        }
+
         return (
             <List>
-                {players.map((p, index) => (
+                {gameState.allPlayers.map((p, index) => (
                     <ListItemButton key={index}>
-                        Player {index + 1}: {p}
+                        Player {index + 1}: {p.display_name}
                     </ListItemButton>
                 ))}
             </List>
         );
     };
+
     const gameModeSelection = () => {
         return (
             <FormControl>
@@ -76,7 +89,14 @@ function Lobby() {
             <Typography variant="h2">{owner}'s Lobby</Typography>
             {gameModeSelection()}
             {playerList()}
-            <Button variant="contained">Leave Lobby</Button>
+            <Button
+                variant="contained"
+                onClick={() => {
+                    window.location = "/";
+                }}
+            >
+                Leave Lobby
+            </Button>
             <Button variant="contained">Start Game</Button>
         </Box>
     );
