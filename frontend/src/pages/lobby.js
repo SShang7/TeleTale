@@ -14,40 +14,32 @@ import { useSelector } from "react-redux";
 import { showGoogleLogin } from "../helpers";
 import { useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
+import { Link } from "react-router-dom";
 
 function Lobby() {
     // TODO: generate game ID
     const socketUrl = "ws://localhost:8000/ws/play/abcdef";
     const profile = useSelector((state) => state);
 
-    function profileExists() {
-        if (!profile || !profile.isLoggedIn) return "Debug";
-        return profile.name;
-    }
-
-    // eslint-disable-next-line no-unused-vars
-    const [owner, setOwner] = useState(profileExists);
     const [gameState, setGameState] = useState(null);
-    const { sendMessage, lastMessage } = useWebSocket(socketUrl);
+    const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl);
 
     useEffect(() => {
-        sendMessage(
-            JSON.stringify({
-                command: "join",
-            })
-        );
-    }, [sendMessage]);
+        sendJsonMessage({
+            command: "join",
+        });
+    }, [sendJsonMessage]);
 
     useEffect(() => {
-        if (lastMessage) {
-            const data = JSON.parse(lastMessage.data);
+        if (lastJsonMessage) {
+            const data = lastJsonMessage;
             if (data.hasOwnProperty("gameState")) {
                 setGameState(data.gameState);
             }
         }
-    }, [lastMessage, setGameState]);
+    }, [lastJsonMessage, setGameState]);
 
-    if (!profile) {
+    if (!profile || !gameState) {
         return <CircularProgress />;
     }
 
@@ -64,7 +56,12 @@ function Lobby() {
         return (
             <List>
                 {gameState.allPlayers.map((p, index) => (
-                    <ListItemButton key={index}>
+                    <ListItemButton
+                        component={Link}
+                        to={`/profile/${p.id}`}
+                        target="_blank"
+                        key={p.display_name}
+                    >
                         Player {index + 1}: {p.display_name}
                     </ListItemButton>
                 ))}
@@ -83,6 +80,8 @@ function Lobby() {
             </FormControl>
         );
     };
+
+    const owner = gameState.owner?.display_name;
     return (
         <Box sx={{ width: "100%", bgcolor: "background.paper" }}>
             <Typography variant="h2">{owner}'s Lobby</Typography>
