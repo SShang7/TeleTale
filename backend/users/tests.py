@@ -29,6 +29,7 @@ class ProfileTestCase(TestCase):
 
         response = client.get(reverse('api:v1:users:profile'))
         self.assertEqual(response.json(), {
+            'id': self.user.id,
             'name': 'Joe',
             'email': 'jbruin@ucla.edu',
             'bio': 'Hello, there!',

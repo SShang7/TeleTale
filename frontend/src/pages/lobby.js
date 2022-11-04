@@ -5,6 +5,7 @@ import {
     FormControl,
     InputLabel,
     List,
+    ListItem,
     ListItemButton,
     MenuItem,
     Select,
@@ -53,18 +54,21 @@ function Lobby() {
             return <List></List>;
         }
 
+        const listItemParts = (p) => {
+            return profile.id === p.id
+                ? [ListItem, {}]
+                : [ListItemButton, { component: Link, to: `/profile/${p.id}`, target: "_blank" }];
+        };
         return (
             <List>
-                {gameState.allPlayers.map((p, index) => (
-                    <ListItemButton
-                        component={Link}
-                        to={`/profile/${p.id}`}
-                        target="_blank"
-                        key={p.display_name}
-                    >
-                        Player {index + 1}: {p.display_name}
-                    </ListItemButton>
-                ))}
+                {gameState.allPlayers.map((p, index) => {
+                    const [ListItemComponent, props] = listItemParts(p);
+                    return (
+                        <ListItemComponent key={p.display_name} {...props}>
+                            Player {index + 1}: {p.display_name}
+                        </ListItemComponent>
+                    );
+                })}
             </List>
         );
     };
