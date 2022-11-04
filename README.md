@@ -41,3 +41,5 @@ DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET=<client_secret>
 * [Material UI App Bar reference](https://reactrouter.com/en/dev/start/tutorial)
 * [Containerizing a web app tutorial](https://medium.com/@gagansh7171/dockerize-your-django-and-react-app-68a7b73ab6e9)
 * [Django REST framework testing](https://www.django-rest-framework.org/api-guide/testing/)
+* [Django Channels example](https://github.com/aduranil/django-channels-react-multiplayer)
+* [Django Channels JWT authentication](https://stackoverflow.com/questions/65297148/django-channels-jwt-authentication)

@@ -1,9 +1,8 @@
 import logging
 from urllib.parse import urlencode
 
-from rest_framework import status, serializers
+from rest_framework import serializers
 from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework_jwt.views import ObtainJSONWebTokenView
 
 from django.urls import reverse
@@ -50,7 +49,8 @@ class GoogleLoginApi(PublicApiMixin, ApiErrorsMixin, APIView):
         login_url = f'{settings.BASE_FRONTEND_URL}/login'
 
         if error or not code:
-            self._logger.error(f"Error occurred while logging in user through OAuth: {error}")
+            self._logger.error(
+                f"Error occurred while logging in user through OAuth: {error}")
             params = urlencode({'error': error})
             return redirect(f'{login_url}?{params}')
 
@@ -75,7 +75,8 @@ class GoogleLoginApi(PublicApiMixin, ApiErrorsMixin, APIView):
         user, _ = user_get_or_create(**profile_data)
 
         if not Profile.objects.filter(user=user).exists():
-            self._logger.debug(f"Creating new profile for user {profile_data}.")
+            self._logger.debug(
+                f"Creating new profile for user {profile_data}.")
             profile = Profile(
                 user=user,
                 display_name=user.first_name,

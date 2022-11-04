@@ -39,7 +39,8 @@ class ApiErrorsMixin:
     def get_error_message(exc) -> str:
         if hasattr(exc, 'message_dict'):
             return exc.message_dict
-        error_msg = ApiErrorsMixin.get_first_matching_attr(exc, 'message', 'messages')
+        error_msg = ApiErrorsMixin.get_first_matching_attr(
+            exc, 'message', 'messages')
 
         if isinstance(error_msg, list):
             error_msg = ', '.join(error_msg)
@@ -52,7 +53,8 @@ class ApiErrorsMixin:
     def handle_exception(self, exc):
         if isinstance(exc, tuple(self.expected_exceptions.keys())):
             drf_exception_class = self.expected_exceptions[exc.__class__]
-            drf_exception = drf_exception_class(ApiErrorsMixin.get_error_message(exc))
+            drf_exception = drf_exception_class(
+                ApiErrorsMixin.get_error_message(exc))
 
             return super().handle_exception(drf_exception)
 
