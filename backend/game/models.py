@@ -29,7 +29,7 @@ class Game(models.Model):
         current_player = None if self.game_status != self.GameStatus.IN_PROGRESS else (
             GamePlayer
             .objects
-            .filter(game=self, is_current=True)[0]
+            .get(game=self, turn_position=self.current_turn)
             .profile.as_json())
 
         return {
@@ -49,9 +49,7 @@ class Game(models.Model):
 class GamePlayer(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    next_player = models.ManyToManyField('self')
-    is_current = models.BooleanField(default=False)
-    is_first = models.BooleanField(default=False)
+    turn_position = models.PositiveSmallIntegerField(null=True)
 
 
 class GamePhrase(models.Model):
