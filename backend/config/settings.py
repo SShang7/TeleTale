@@ -219,3 +219,9 @@ JWT_AUTH = {
 # Google OAuth2 settings
 GOOGLE_OAUTH2_CLIENT_ID = env.str('DJANGO_GOOGLE_OAUTH2_CLIENT_ID')
 GOOGLE_OAUTH2_CLIENT_SECRET = env.str('DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET')
+
+
+# API generation settings
+SWAGGER_SETTINGS = {
+    'DEFAULT_INFO': 'config.urls.api_info',
+}
