@@ -15,23 +15,27 @@ import {
 import { useSelector } from "react-redux";
 import { showGoogleLogin } from "../helpers";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import useWebSocket from "react-use-websocket";
 import { Link } from "react-router-dom";
 
 function Game() {
-    // TODO: generate game ID
-    const socketUrl = "ws://localhost:8000/ws/play/abcdef";
+    const { id } = useParams();
+    const socketUrl = `ws://localhost:8000/ws/play/${id}`;
     const profile = useSelector((state) => state);
 
     const [gameState, setGameState] = useState(null);
+    const [hasCopiedId, sethasCopiedId] = useState(false);
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl);
 
+    // Send join message on page load
     useEffect(() => {
         sendJsonMessage({
             command: "join",
         });
     }, [sendJsonMessage]);
 
+    // Update game state upon receiving a message from the web socket
     useEffect(() => {
         if (lastJsonMessage) {
             const data = lastJsonMessage;
@@ -44,7 +48,6 @@ function Game() {
     if (!profile || !gameState) {
         return <CircularProgress />;
     }
-
     if (!profile.isLoggedIn) {
         showGoogleLogin();
         return <></>;
@@ -86,11 +89,29 @@ function Game() {
         );
     };
 
+    const gameIdDisplay = () => {
+        const label = !hasCopiedId ? "Click to copy Game ID" : "Copied!";
+        return (
+            <>
+                <TextField
+                    defaultValue={id}
+                    label={label}
+                    onClick={() => {
+                        navigator.clipboard.writeText(id);
+                        sethasCopiedId(true);
+                    }}
+                    disabled
+                />
+            </>
+        );
+    };
+
     const owner = gameState.owner?.display_name;
     const lobby = () => {
         return (
             <>
                 <Typography variant="h2">{owner}'s Lobby</Typography>
+                {gameIdDisplay()}
                 {gameModeSelection()}
                 {playerList()}
                 <Button
@@ -157,9 +178,9 @@ function Game() {
             case "In Progress":
                 return game();
             case "Finished":
-                return <Typography>The game has ended.</Typography>;
+                return <Typography variant="h2">The game has ended.</Typography>;
             default:
-                return <Typography>Oops! Something went wrong on our end.</Typography>;
+                return <Typography variant="h2">Oops! Something went wrong on our end.</Typography>;
         }
     };
 

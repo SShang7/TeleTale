@@ -42,7 +42,7 @@ function App() {
                     element: <OtherUser></OtherUser>,
                 },
                 {
-                    path: "game",
+                    path: "game/:id",
                     element: <Game></Game>,
                 },
             ],

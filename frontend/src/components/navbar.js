@@ -47,7 +47,14 @@ function Navbar() {
         };
     };
 
-    const pages = [{name: "Create Game", link: "/lobby"}, { name: "Profile", link: "/profile" } ];
+    const gameId = new Array(10)
+        .fill(0)
+        .map(() => "abcdefijklmnopqrstuvwxyz"[Math.floor(26 * Math.random())])
+        .join("");
+    const pages = [
+        { name: "Create Game", link: `/game/${gameId}` },
+        { name: "Profile", link: "/profile" },
+    ];
     const settings = [
         {
             name: "Profile",
