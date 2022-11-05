@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import UserProfile from "../components/userProfile";
+import { userProfileRoute } from "../util/backendRoutes";
 
 export default function OtherUser() {
     const { id } = useParams();
@@ -12,9 +13,7 @@ export default function OtherUser() {
     useEffect(() => {
         async function fetchUser() {
             try {
-                const response = await axios.get(
-                    `http://localhost:8000/api/v1/users/profile/${id}`
-                );
+                const response = await axios.get(userProfileRoute(id));
                 setProfile({ valid: true, ...response.data });
             } catch {
                 setProfile({ valid: false });

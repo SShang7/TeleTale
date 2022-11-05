@@ -18,10 +18,11 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useWebSocket from "react-use-websocket";
 import { Link } from "react-router-dom";
+import { playGameRoute } from "../util/backendRoutes";
 
 function Game() {
     const { id } = useParams();
-    const socketUrl = `ws://localhost:8000/ws/play/${id}`;
+    const socketUrl = playGameRoute(id);
     const profile = useSelector((state) => state);
 
     const [gameState, setGameState] = useState(null);
