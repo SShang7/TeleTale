@@ -180,6 +180,26 @@ function Game() {
         );
     };
 
+    const results = () => {
+        return (
+            <>
+                <Typography variant="h2">Your story has been told:</Typography>
+                {gameState.phrases.map((phrase) => {
+                    return (
+                        <>
+                            {phrase.turnNumber === 1 && (
+                                <Typography variant="h6">Round {phrase.roundNumber}</Typography>
+                            )}
+                            <Typography variant="body1">
+                                {phrase.author}: {phrase.phrase}
+                            </Typography>
+                        </>
+                    );
+                })}
+            </>
+        );
+    };
+
     const display = () => {
         switch (gameState.gameStatus) {
             case "Created":
@@ -187,18 +207,7 @@ function Game() {
             case "In Progress":
                 return game();
             case "Finished":
-                return (
-                    <>
-                        <Typography variant="h2">Your story has been told.</Typography>
-                        {gameState.phrases.map((phrase) => {
-                            return (
-                                <Typography variant="body1">
-                                    {phrase.author}: {phrase.phrase}
-                                </Typography>
-                            );
-                        })}
-                    </>
-                );
+                return results();
             default:
                 return <Typography variant="h2">Oops! Something went wrong on our end.</Typography>;
         }

@@ -46,7 +46,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             profile=self.profile, game=self.game)
 
     @database_sync_to_async
-    def set_players(self):
+    def refresh_player_list(self):
         players = list(self.game.gameplayer_set.all())
         self.all_players = [x.profile.as_json() for x in players]
 
@@ -108,7 +108,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
     async def receive_json(self, content):
         await self.refresh_game_state()
-        await self.set_players()
+        await self.refresh_player_list()
         command = content.get("command", None)
 
         if command == 'join':
@@ -209,7 +209,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         self.game.save()
 
     async def websocket_join(self, event):
-        await self.set_players()
+        await self.refresh_player_list()
         await self.send_json(({
             'command': event['command'],
             'info': event['info'],
@@ -232,7 +232,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
     async def websocket_leave(self, event):
         await self.refresh_game_state()
-        await self.set_players()
+        await self.refresh_player_list()
         await self.send_json(({
             'command': 'leave',
             'info': event['info'],
