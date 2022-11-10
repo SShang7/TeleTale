@@ -32,6 +32,9 @@ class Game(models.Model):
             .get(game=self, turn_position=self.current_turn)
             .profile.as_json())
 
+        phrases = list(self.gamephrase_set.all().order_by(
+            'round_number', 'turn_number'))
+
         return {
             'id': self.game_id,
             'gameStatus': self.game_status,
@@ -43,6 +46,7 @@ class Game(models.Model):
             'currentTurn': self.current_turn,
             'timer': self.timer,
             'prompt': self.prompt,
+            'phrases': [p.as_json() for p in phrases],
         }
 
 
@@ -53,8 +57,17 @@ class GamePlayer(models.Model):
 
 
 class GamePhrase(models.Model):
-    author = models.ForeignKey(GamePlayer, on_delete=models.CASCADE)
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
     round_number = models.PositiveSmallIntegerField()
     turn_number = models.PositiveSmallIntegerField()
     phrase = models.TextField()
     image = models.ImageField()
+
+    def as_json(self):
+        return {
+            'author': self.author.display_name,
+            'roundNumber': self.round_number,
+            'turnNumber': self.turn_number,
+            'phrase': self.phrase,
+        }

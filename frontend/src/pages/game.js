@@ -25,6 +25,7 @@ function Game() {
     const profile = useSelector((state) => state);
 
     const [gameState, setGameState] = useState(null);
+    const [phrase, setPhrase] = useState("");
     const [hasCopiedId, sethasCopiedId] = useState(false);
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl);
 
@@ -149,13 +150,21 @@ function Game() {
                         <Typography>It's your turn! Your prompt is:</Typography>
                         <Typography>{gameState.prompt}</Typography>
 
-                        <TextField variant="outlined" multiline rows={2}></TextField>
+                        <TextField
+                            value={phrase}
+                            onChange={(e) => setPhrase(e.target.value)}
+                            variant="outlined"
+                            placeholder="Enter your phrase!"
+                            multiline
+                            rows={2}
+                        ></TextField>
                         <Button
                             variant="contained"
                             onClick={() => {
+                                setPhrase("");
                                 sendJsonMessage({
                                     command: "submit",
-                                    phrase: "PLACEHOLDER PHRASE TEXT",
+                                    phrase,
                                 });
                             }}
                         >
@@ -178,7 +187,18 @@ function Game() {
             case "In Progress":
                 return game();
             case "Finished":
-                return <Typography variant="h2">The game has ended.</Typography>;
+                return (
+                    <>
+                        <Typography variant="h2">Your story has been told.</Typography>
+                        {gameState.phrases.map((phrase) => {
+                            return (
+                                <Typography variant="body1">
+                                    {phrase.author}: {phrase.phrase}
+                                </Typography>
+                            );
+                        })}
+                    </>
+                );
             default:
                 return <Typography variant="h2">Oops! Something went wrong on our end.</Typography>;
         }

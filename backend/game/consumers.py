@@ -186,7 +186,8 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         # TODO: send phrase to ML model
         phrase = content.get('phrase', '')
         GamePhrase.objects.create(
-            author=self.player,
+            author=self.player.profile,
+            game=self.game,
             round_number=self.game.current_round,
             turn_number=self.game.current_turn,
             phrase=phrase,
