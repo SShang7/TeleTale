@@ -29,8 +29,11 @@ class Game(models.Model):
         current_player = None if self.game_status != self.GameStatus.IN_PROGRESS else (
             GamePlayer
             .objects
-            .filter(game=self, is_current=True)[0]
+            .get(game=self, turn_position=self.current_turn)
             .profile.as_json())
+
+        phrases = list(self.gamephrase_set.all().order_by(
+            'round_number', 'turn_number'))
 
         return {
             'id': self.game_id,
@@ -43,20 +46,28 @@ class Game(models.Model):
             'currentTurn': self.current_turn,
             'timer': self.timer,
             'prompt': self.prompt,
+            'phrases': [p.as_json() for p in phrases],
         }
 
 
 class GamePlayer(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    next_player = models.ManyToManyField('self')
-    is_current = models.BooleanField(default=False)
-    is_first = models.BooleanField(default=False)
+    turn_position = models.PositiveSmallIntegerField(null=True)
 
 
 class GamePhrase(models.Model):
-    author = models.ForeignKey(GamePlayer, on_delete=models.CASCADE)
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
     round_number = models.PositiveSmallIntegerField()
     turn_number = models.PositiveSmallIntegerField()
     phrase = models.TextField()
     image = models.ImageField()
+
+    def as_json(self):
+        return {
+            'author': self.author.display_name,
+            'roundNumber': self.round_number,
+            'turnNumber': self.turn_number,
+            'phrase': self.phrase,
+        }

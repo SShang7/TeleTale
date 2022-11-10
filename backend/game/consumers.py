@@ -19,7 +19,8 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             f'User {self.user.username} has joined game {self.game_id}')
 
         # Create game and player objects and accept connection
-        await self.create_game()
+        if not await self.create_game():
+            return
         await self.create_player()
         await self.accept()
 
@@ -32,27 +33,40 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
     @database_sync_to_async
     def create_game(self):
+        user_profile = Profile.objects.get(user=self.user)
+        if Game.objects.filter(owner=user_profile).count() > 0:
+            return False
+
         self.game, is_created = Game.objects.get_or_create(
             game_id=self.game_id)
 
         if is_created:
-            self.game.owner = Profile.objects.get(user=self.user)
+            self.game.owner = user_profile
             self.game.save()
+
+        return True
 
     @database_sync_to_async
     def create_player(self):
-        profile = Profile.objects.get(user=self.user)
+        self.profile = Profile.objects.get(user=self.user)
         self.player, _ = GamePlayer.objects.get_or_create(
-            profile=profile, game=self.game)
+            profile=self.profile, game=self.game)
 
     @database_sync_to_async
-    def set_players(self):
+    def refresh_player_list(self):
         players = list(self.game.gameplayer_set.all())
         self.all_players = [x.profile.as_json() for x in players]
 
     @database_sync_to_async
+    def refresh_game_state(self):
+        self.game = Game.objects.get(game_id=self.game_id)
+        self.player = GamePlayer.objects.get(
+            game_id=self.game_id, profile=self.profile)
+
+    @database_sync_to_async
     def delete_player(self):
-        # TODO: need to delete player from turns (i.e. a circular queue)
+        old_turns = self.game.gameplayer_set.count()
+        self.player = GamePlayer.objects.get(id=self.player.id)
         self.player.delete()
 
         all_players = self.game.gameplayer_set.all()
@@ -63,6 +77,21 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             self.game.delete()
         else:
             self.game.owner = all_players[0].profile
+            if self.game.game_status == Game.GameStatus.IN_PROGRESS:
+                # Special case: move game to the next round if this one is the last player
+                turn_position = self.player.turn_position
+                if self.game.current_turn == turn_position and turn_position == old_turns:
+                    self.game.current_turn = 1
+                    self.game.current_round += 1
+                    if self.game.current_round > self.game.num_rounds:
+                        self.game.game_status = Game.GameStatus.FINISHED
+
+                # Decrement the turn position of all players after this one
+                players_after = all_players.filter(
+                    turn_position__gt=self.player.turn_position)
+                for player in players_after:
+                    player.turn_position -= 1
+                    player.save()
             self.game.save()
 
     async def disconnect(self, close_code):
@@ -75,7 +104,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             self.room_group_name,
             {
                 'type': 'websocket_leave',
-                'info': f'{self.player.profile.display_name} has left'
+                'info': f'{await self.get_profile_name()} has left'
             }
         )
 
@@ -84,15 +113,12 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             self.channel_name
         )
 
-    @database_sync_to_async
-    def refresh_game_state(self):
-        self.game = Game.objects.get(game_id=self.game_id)
-
     async def receive_json(self, content):
         await self.refresh_game_state()
+        await self.refresh_player_list()
         command = content.get("command", None)
 
-        if command == 'join' and self.game.game_status == Game.GameStatus.CREATED:
+        if command == 'join':
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -102,7 +128,11 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                 }
             )
         if command == 'start':
-            # TODO
+            if self.game.game_status != Game.GameStatus.CREATED:
+                self._logger.error(
+                    f'Game {self.game.game_id} tried to start from an invalid state.')
+                return
+
             await self.setup_game()
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -112,7 +142,16 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                 }
             )
         if command == 'submit':
-            # TODO
+            if self.game.game_status != Game.GameStatus.IN_PROGRESS:
+                self._logger.error(
+                    f'User {self.user.username} tried to submit a phrase to game {self.game.game_id}, which is not in progress.')
+                return
+
+            if self.game.current_turn != self.player.turn_position:
+                self._logger.error(
+                    f'User {self.user.username} tried to submit a phrase to game {self.game.game_id} when it is not their turn.')
+                return
+
             await self.write_phrase(content)
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -135,53 +174,49 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
     @database_sync_to_async
     def get_profile_name(self):
-        return self.player.profile.display_name
+        return self.profile.display_name
 
     @database_sync_to_async
     def setup_game(self):
-        # Shuffle the order of players and create circular queue of players
-        players = shuffle(list(self.game.gameplayer_set.all()))
-        previous = players[0]
-        previous.is_current = True
-        previous.is_first = True
-
-        previous.save()
-
-        for player in players[1:]:
-            previous.next_player = player
-            previous.save()
-        players[-1].next_player = players[0]
-        players[-1].save()
-
+        # Shuffle the order of players
+        players = list(self.game.gameplayer_set.all())
+        shuffle(players)
+        for i, player in enumerate(players):
+            player.turn_position = i+1
+            player.save()
         self.game.game_status = Game.GameStatus.IN_PROGRESS
         self.game.save()
 
     @database_sync_to_async
     def write_phrase(self, content):
         # Submit phrase for the player's turn
+        # TODO: send phrase to ML model
         phrase = content.get('phrase', '')
         GamePhrase.objects.create(
-            author=self.player,
+            author=self.player.profile,
+            game=self.game,
             round_number=self.game.current_round,
             turn_number=self.game.current_turn,
             phrase=phrase,
         )
 
-        # Update round information
-        self.player.is_current = False
-        self.player.save()
+        # Update the turn and round
+        turns = len(self.all_players)
+        current_turn = self.game.current_turn
 
-        next_player = self.player.next_player
-        next_player.is_current = True
-        if next_player.is_first:
+        # This line increments the turn by one, modulo the number of turns (1-indexed)
+        next_turn = (((current_turn - 1) + 1) % turns) + 1
+
+        self.game.current_turn = next_turn
+        if next_turn == 1:
             self.game.current_round += 1
-            self.game.current_turn = 1
-        else:
-            self.game.current_turn += 1
+            if self.game.current_round > self.game.num_rounds:
+                self.game.game_status = Game.GameStatus.FINISHED
+        self.game.prompt = phrase
         self.game.save()
 
     async def websocket_join(self, event):
-        await self.set_players()
+        await self.refresh_player_list()
         await self.send_json(({
             'command': event['command'],
             'info': event['info'],
@@ -189,6 +224,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         }))
 
     async def websocket_info(self, event):
+        await self.refresh_game_state()
         await self.send_json(({
             'command': event['command'],
             'gameState': await self.game.as_json(),
@@ -202,8 +238,8 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         }))
 
     async def websocket_leave(self, event):
-        await self.set_players()
         await self.refresh_game_state()
+        await self.refresh_player_list()
         await self.send_json(({
             'command': 'leave',
             'info': event['info'],

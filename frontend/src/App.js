@@ -1,6 +1,6 @@
 import React from "react";
 import Profile from "./pages/profile";
-import Lobby from "./pages/lobby";
+import Game from "./pages/game";
 import Home from "./pages/home";
 import OtherUser from "./pages/otherUser";
 import Navbar from "./components/navbar";
@@ -42,8 +42,8 @@ function App() {
                     element: <OtherUser></OtherUser>,
                 },
                 {
-                    path: "lobby",
-                    element: <Lobby></Lobby>,
+                    path: "game/:id",
+                    element: <Game></Game>,
                 },
             ],
         },
