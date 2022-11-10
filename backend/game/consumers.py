@@ -19,7 +19,8 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             f'User {self.user.username} has joined game {self.game_id}')
 
         # Create game and player objects and accept connection
-        await self.create_game()
+        if not await self.create_game():
+            return
         await self.create_player()
         await self.accept()
 
@@ -32,12 +33,18 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
     @database_sync_to_async
     def create_game(self):
+        user_profile = Profile.objects.get(user=self.user)
+        if Game.objects.filter(owner=user_profile).count() > 0:
+            return False
+
         self.game, is_created = Game.objects.get_or_create(
             game_id=self.game_id)
 
         if is_created:
-            self.game.owner = Profile.objects.get(user=self.user)
+            self.game.owner = user_profile
             self.game.save()
+
+        return True
 
     @database_sync_to_async
     def create_player(self):
