@@ -1,18 +1,26 @@
-# Use python 3.8 image to base container on
-FROM python:3.8
+ARG PYTHON_VERSION=3.8-slim-buster
 
-# Python output is set straight to the terminal without buffering
+FROM python:${PYTHON_VERSION}
+
+ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Set working directory to /api
-WORKDIR /api
+RUN mkdir -p /code
 
-# Install necessary packages
-COPY requirements.txt ./
-RUN pip install -r requirements.txt
+WORKDIR /code
 
-# Copy current directory contents into container at /api
-COPY . ./
+COPY requirements.txt /tmp/requirements.txt
 
-# Expose port 8000
+RUN set -ex && \
+    pip install --upgrade pip && \
+    pip install -r /tmp/requirements.txt && \
+    rm -rf /root/.cache/
+
+COPY . /code/
+
+RUN python manage.py migrate
+RUN python manage.py collectstatic --noinput
+
 EXPOSE 8000
+
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

@@ -14,7 +14,8 @@ import {
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { showGoogleLogin } from "../helpers";
+import { showGoogleLogin } from "../util/login";
+import { logoutRoute } from "../util/backendRoutes";
 
 function Navbar() {
     // This code snippet is heavily inspired by this part of the react MUI docs.
@@ -65,7 +66,7 @@ function Navbar() {
         {
             name: "Logout",
             onClick: () => {
-                window.location = "http://localhost:8000/api/v1/auth/logout/";
+                window.location = logoutRoute();
             },
         },
     ];

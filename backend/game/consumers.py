@@ -39,6 +39,8 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
         self.game, is_created = Game.objects.get_or_create(
             game_id=self.game_id)
+        if self.game.game_status != Game.GameStatus.CREATED:
+            return False
 
         if is_created:
             self.game.owner = user_profile

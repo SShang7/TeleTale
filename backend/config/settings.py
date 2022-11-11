@@ -14,6 +14,7 @@ from calendar import c
 import datetime
 import environ
 import logging
+import os
 from pathlib import Path
 
 import django
@@ -28,6 +29,9 @@ environ.Env.read_env('.env')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 # Quick-start development settings - unsuitable for production
@@ -44,7 +48,7 @@ BASE_BACKEND_URL = env.str('DJANGO_BASE_BACKEND_URL',
 BASE_FRONTEND_URL = env.str(
     'DJANGO_BASE_FRONTEND_URL', default='http://localhost:3000')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -173,9 +177,8 @@ CORS_ALLOW_CREDENTIALS = True
 # Whitelist for CORS
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000"
+    BASE_FRONTEND_URL
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
@@ -217,8 +220,9 @@ JWT_AUTH = {
 }
 
 # Google OAuth2 settings
-GOOGLE_OAUTH2_CLIENT_ID = env.str('DJANGO_GOOGLE_OAUTH2_CLIENT_ID')
-GOOGLE_OAUTH2_CLIENT_SECRET = env.str('DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET')
+GOOGLE_OAUTH2_CLIENT_ID = env.str('DJANGO_GOOGLE_OAUTH2_CLIENT_ID', default='')
+GOOGLE_OAUTH2_CLIENT_SECRET = env.str(
+    'DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET', default='')
 
 
 # API generation settings
