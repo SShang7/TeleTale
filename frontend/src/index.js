@@ -5,6 +5,7 @@ import reportWebVitals from "./reportWebVitals";
 import { CssBaseline } from "@mui/material";
 import { fetchIsLoggedIn } from "./redux/actions";
 import store from "./redux/store";
+import axios from "axios";
 
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
@@ -12,6 +13,8 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
 store.dispatch(fetchIsLoggedIn());
+
+axios.defaults.withCredentials = true;
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

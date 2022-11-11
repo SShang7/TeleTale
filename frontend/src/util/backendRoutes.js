@@ -20,4 +20,15 @@ const playGameRoute = (gameId) => {
     return `${BACKEND_WS_URL}/ws/play/${gameId}`;
 };
 
-export { googleLoginRoute, logoutRoute, currentProfileRoute, userProfileRoute, playGameRoute };
+const createGameRoute = () => {
+    return `${BACKEND_URL}/api/v1/game/create/`;
+};
+
+export {
+    googleLoginRoute,
+    logoutRoute,
+    currentProfileRoute,
+    userProfileRoute,
+    playGameRoute,
+    createGameRoute,
+};

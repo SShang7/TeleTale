@@ -10,4 +10,13 @@ const GOOGLE_OAUTH_SCOPE = [
 
 const GOOGLE_OAUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 
-export { BACKEND_URL, BACKEND_WS_URL, GOOGLE_CLIENT_ID, GOOGLE_OAUTH_SCOPE, GOOGLE_OAUTH_URL };
+const VALID_GAME_ID = new RegExp("^[a-z]{10}$");
+
+export {
+    BACKEND_URL,
+    BACKEND_WS_URL,
+    GOOGLE_CLIENT_ID,
+    GOOGLE_OAUTH_SCOPE,
+    GOOGLE_OAUTH_URL,
+    VALID_GAME_ID,
+};

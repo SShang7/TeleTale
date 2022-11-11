@@ -28,7 +28,10 @@ function Game() {
     const [gameState, setGameState] = useState(null);
     const [phrase, setPhrase] = useState("");
     const [hasCopiedId, sethasCopiedId] = useState(false);
-    const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl);
+    const [hasWebsocketError, setHasWebsocketError] = useState(false);
+    const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
+        onError: () => setHasWebsocketError(true),
+    });
 
     // Send join message on page load
     useEffect(() => {
@@ -47,6 +50,13 @@ function Game() {
         }
     }, [lastJsonMessage, setGameState]);
 
+    if (hasWebsocketError) {
+        return (
+            <Typography variant="h6">
+                Unable to connect to the game. Make sure the specified game ID is correct!
+            </Typography>
+        );
+    }
     if (!profile || !gameState) {
         return <CircularProgress />;
     }
