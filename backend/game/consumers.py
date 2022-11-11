@@ -36,11 +36,12 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
     @database_sync_to_async
     def set_game(self):
         try:
-            self.game, _ = Game.objects.get(game_id=self.game_id)
+            self.game = Game.objects.get(game_id=self.game_id)
             return True
         except ObjectDoesNotExist:
             self._logger.error(
                 f"User tried to join game {self.game_id}, which does not exist.")
+            self.game = None
             return False
 
     @database_sync_to_async
@@ -94,6 +95,9 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
     async def disconnect(self, close_code):
         self._logger.debug(
             f'{self.user.username} disconnected from game {self.game_id}.')
+
+        if self.game is None:
+            return
 
         # Leave the game room
         await self.delete_player()

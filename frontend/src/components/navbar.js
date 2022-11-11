@@ -15,7 +15,7 @@ import {
 import { useSelector } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { showGoogleLogin } from "../util/login";
-import { logoutRoute } from "../util/backendRoutes";
+import { createGameRoute, logoutRoute } from "../util/backendRoutes";
 import axios from "axios";
 
 function Navbar() {
@@ -54,7 +54,7 @@ function Navbar() {
             name: "Create Game",
             onClick: () => {
                 return async () => {
-                    const response = await axios.post("http://localhost:8000/api/v1/game/create/", {
+                    const response = await axios.post(createGameRoute(), {
                         withCredentials: true,
                     });
                     console.log(response);
