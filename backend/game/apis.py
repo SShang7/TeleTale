@@ -34,12 +34,13 @@ class CreateGameApi(ApiAuthMixin, ApiErrorsMixin, APIView):
         except ObjectDoesNotExist:
             self._logger.debug(
                 f"User {user} is already the owner of another game.")
+
             game_id = generate_game_id()
             while Game.objects.filter(game_id=game_id).count() != 0:
                 game_id = generate_game_id()
+
             Game.objects.create(game_id=game_id, owner=profile)
 
-        print(game_id)
         return Response({
             "gameId": game_id,
         })
