@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { showGoogleLogin } from "../util/login";
 import { logoutRoute } from "../util/backendRoutes";
+import axios from "axios";
 
 function Navbar() {
     // This code snippet is heavily inspired by this part of the react MUI docs.
@@ -48,13 +49,20 @@ function Navbar() {
         };
     };
 
-    const gameId = new Array(10)
-        .fill(0)
-        .map(() => "abcdefijklmnopqrstuvwxyz"[Math.floor(26 * Math.random())])
-        .join("");
     const pages = [
-        { name: "Create Game", link: `/game/${gameId}` },
-        { name: "Profile", link: "/profile" },
+        {
+            name: "Create Game",
+            onClick: () => {
+                return async () => {
+                    const response = await axios.post("http://localhost:8000/api/v1/game/create/", {
+                        withCredentials: true,
+                    });
+                    console.log(response);
+                    navigate(`/game/${response.data.gameId}`);
+                };
+            },
+        },
+        { name: "Profile", onClick: () => handleCloseNavMenu("/profile") },
     ];
     const settings = [
         {
@@ -87,10 +95,10 @@ function Navbar() {
                         TeleTale
                     </Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-                        {pages.map(({ name, link }) => (
+                        {pages.map(({ name, onClick }) => (
                             <Button
                                 key={name}
-                                onClick={handleCloseNavMenu(link)}
+                                onClick={onClick()}
                                 sx={{ my: 2, color: "white", display: "block" }}
                             >
                                 {name}

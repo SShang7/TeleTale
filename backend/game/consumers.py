@@ -1,6 +1,8 @@
 import logging
 from random import shuffle
 
+from django.core.exceptions import ObjectDoesNotExist
+
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
@@ -18,8 +20,8 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         self._logger.debug(
             f'User {self.user.username} has joined game {self.game_id}')
 
-        # Create game and player objects and accept connection
-        if not await self.create_game():
+        # Set game and player objects and accept connection
+        if not await self.set_game():
             return
         await self.create_player()
         await self.accept()
@@ -32,21 +34,14 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         )
 
     @database_sync_to_async
-    def create_game(self):
-        user_profile = Profile.objects.get(user=self.user)
-        if Game.objects.filter(owner=user_profile).count() > 0:
+    def set_game(self):
+        try:
+            self.game, _ = Game.objects.get(game_id=self.game_id)
+            return True
+        except ObjectDoesNotExist:
+            self._logger.error(
+                f"User tried to join game {self.game_id}, which does not exist.")
             return False
-
-        self.game, is_created = Game.objects.get_or_create(
-            game_id=self.game_id)
-        if self.game.game_status != Game.GameStatus.CREATED:
-            return False
-
-        if is_created:
-            self.game.owner = user_profile
-            self.game.save()
-
-        return True
 
     @database_sync_to_async
     def create_player(self):
