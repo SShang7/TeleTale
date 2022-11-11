@@ -29,12 +29,14 @@ class CreateGameApi(ApiAuthMixin, ApiErrorsMixin, APIView):
             return Response(status=404)
 
         try:
+            # Check to see if the user is already an owner of a game. If so, return it.
             game = Game.objects.get(owner=profile)
             game_id = game.game_id
-        except ObjectDoesNotExist:
+
             self._logger.debug(
                 f"User {user} is already the owner of another game.")
-
+        except ObjectDoesNotExist:
+            # User does not own a game, so create a new game with a unique game ID.
             game_id = generate_game_id()
             while Game.objects.filter(game_id=game_id).count() != 0:
                 game_id = generate_game_id()
