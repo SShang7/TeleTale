@@ -19,7 +19,7 @@ function Home() {
         <>
             <Typography variant="h6">Join via game ID:</Typography>
             <TextField
-                error={gameId && gameId.length !== 10}
+                error={!!gameId && gameId.length !== 10}
                 helperText={errorMessage}
                 onChange={(e) => setGameId(e.target.value)}
                 placeholder="Game ID"

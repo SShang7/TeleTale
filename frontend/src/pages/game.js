@@ -30,7 +30,7 @@ function Game() {
     const [hasCopiedId, sethasCopiedId] = useState(false);
     const [hasWebsocketError, setHasWebsocketError] = useState(false);
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
-        onError: () => setHasWebsocketError(true),
+        onError: () => setHasWebsocketError(!!profile && profile.isLoggedIn),
     });
 
     // Send join message on page load
@@ -57,7 +57,8 @@ function Game() {
             </Typography>
         );
     }
-    if (!profile || !gameState) {
+    if (!profile || (profile.isLoggedIn && !gameState)) {
+        // Show loading screen if profile data or game state is being fetched
         return <CircularProgress />;
     }
     if (!profile.isLoggedIn) {

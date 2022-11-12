@@ -49,15 +49,20 @@ function Navbar() {
         };
     };
 
+    const profile = useSelector((state) => state);
+
     const pages = [
         {
             name: "Create Game",
             onClick: () => {
+                if (!profile || !profile.isLoggedIn) {
+                    return showGoogleLogin;
+                }
+
                 return async () => {
                     const response = await axios.post(createGameRoute(), {
                         withCredentials: true,
                     });
-                    console.log(response);
                     navigate(`/game/${response.data.gameId}`);
                 };
             },
@@ -78,8 +83,6 @@ function Navbar() {
             },
         },
     ];
-
-    const profile = useSelector((state) => state);
 
     return (
         <AppBar position="static">
