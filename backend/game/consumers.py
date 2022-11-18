@@ -169,7 +169,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                     'command': command,
                     'type': 'websocket_chat',
                     'message': content.get('message', ''),
-                    'user': content.get('user', None),
+                    'sender': self.profile.as_json(),
                 }
             )
 
@@ -234,7 +234,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
     async def websocket_chat(self, event):
         await self.send_json(({
             'command': event['command'],
-            'user': event['user'],
+            'sender': event['sender'],
             'message': event['message'],
         }))
 

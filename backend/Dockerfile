@@ -11,7 +11,9 @@ WORKDIR /code
 
 COPY requirements.txt /tmp/requirements.txt
 
-RUN set -ex && \
+RUN apt-get update && \
+    apt-get -y install gcc && \
+    set -ex && \
     pip install --upgrade pip && \
     pip install -r /tmp/requirements.txt && \
     rm -rf /root/.cache/
