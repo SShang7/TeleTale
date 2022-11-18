@@ -3,6 +3,7 @@ import {
     Button,
     CircularProgress,
     FormControl,
+    Grid,
     InputLabel,
     List,
     ListItem,
@@ -19,6 +20,16 @@ import { useParams } from "react-router-dom";
 import useWebSocket from "react-use-websocket";
 import { Link } from "react-router-dom";
 import { playGameRoute } from "../util/backendRoutes";
+import {
+    Avatar,
+    ChatContainer,
+    ConversationHeader,
+    Message,
+    MessageInput,
+    MessageList,
+} from "@chatscope/chat-ui-kit-react";
+// eslint-disable-next-line no-unused-vars
+import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 
 function Game() {
     const { id } = useParams();
@@ -29,6 +40,8 @@ function Game() {
     const [phrase, setPhrase] = useState("");
     const [hasCopiedId, sethasCopiedId] = useState(false);
     const [hasWebsocketError, setHasWebsocketError] = useState(false);
+    const [message, setMessage] = useState("");
+    const [messageList, setMessageList] = useState([]);
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
         onError: () => setHasWebsocketError(!!profile && profile.isLoggedIn),
     });
@@ -44,7 +57,9 @@ function Game() {
     useEffect(() => {
         if (lastJsonMessage) {
             const data = lastJsonMessage;
-            if (data.hasOwnProperty("gameState")) {
+            if (data.command === "chat") {
+                setMessageList((messages) => [...messages, data]);
+            } else if (data.hasOwnProperty("gameState")) {
                 setGameState(data.gameState);
             }
         }
@@ -149,6 +164,43 @@ function Game() {
         );
     };
 
+    const formatChatMessages = () => {
+        return messageList.map((x) => {
+            return (
+                <Message
+                    model={{
+                        message: x.message,
+                        sender: x.sender.display_name,
+                    }}
+                >
+                    <Avatar src={x.sender.profile_pic} name={x.sender.display_name}></Avatar>
+                </Message>
+            );
+        });
+    };
+
+    const chat = () => {
+        return (
+            <ChatContainer>
+                <ConversationHeader>
+                    <ConversationHeader.Content info="Chat with other players!" />
+                </ConversationHeader>
+                <MessageList>{formatChatMessages()}</MessageList>
+                <MessageInput
+                    placeholder="Type your message here"
+                    attachButton={false}
+                    onChange={setMessage}
+                    onSend={() => {
+                        sendJsonMessage({
+                            command: "chat",
+                            message,
+                        });
+                    }}
+                />
+            </ChatContainer>
+        );
+    };
+
     const game = () => {
         if (gameState.gameStatus !== "In Progress") {
             return <></>;
@@ -225,7 +277,18 @@ function Game() {
         }
     };
 
-    return <Box sx={{ width: "100%", bgcolor: "background.paper" }}>{display()}</Box>;
+    return (
+        <Box sx={{ width: "100%" }}>
+            <Grid container spacing={2}>
+                <Grid item xs={8}>
+                    {display()}
+                </Grid>
+                <Grid item xs={4}>
+                    {chat()}
+                </Grid>
+            </Grid>
+        </Box>
+    );
 }
 
 export default Game;
