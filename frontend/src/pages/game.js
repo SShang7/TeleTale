@@ -134,6 +134,8 @@ function Game() {
         );
     };
 
+    console.log(gameState);
+
     const owner = gameState.owner?.display_name;
     const lobby = () => {
         return (
@@ -248,15 +250,28 @@ function Game() {
         return (
             <>
                 <Typography variant="h2">Your story has been told:</Typography>
-                {gameState.phrases.map((phrase) => {
+                {gameState.phrases.map((phrase, i) => {
                     return (
                         <>
                             {phrase.turnNumber === 1 && (
-                                <Typography variant="h6">Round {phrase.roundNumber}</Typography>
+                                <>
+                                    <hr />
+                                    <Typography variant="h6">Round {phrase.roundNumber}</Typography>
+                                </>
                             )}
-                            <Typography variant="body1">
-                                {phrase.author}: {phrase.phrase}
-                            </Typography>
+                            <div style={{ display: "flex", alignItems: "center" }}>
+                                <Typography variant="body1">
+                                    {phrase.author}: {phrase.phrase}
+                                </Typography>
+                                {phrase.image_url !== "" ? (
+                                    <img
+                                        style={{ marginLeft: "auto" }}
+                                        src={phrase.image_url}
+                                    ></img>
+                                ) : (
+                                    <CircularProgress sx={{ marginLeft: "auto" }} />
+                                )}
+                            </div>
                         </>
                     );
                 })}
