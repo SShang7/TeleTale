@@ -42,6 +42,7 @@ function Game() {
     const [hasWebsocketError, setHasWebsocketError] = useState(false);
     const [message, setMessage] = useState("");
     const [messageList, setMessageList] = useState([]);
+    const [phraseImages, setPhraseImages] = useState({});
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
         onError: () => setHasWebsocketError(!!profile && profile.isLoggedIn),
     });
@@ -59,6 +60,11 @@ function Game() {
             const data = lastJsonMessage;
             if (data.command === "chat") {
                 setMessageList((messages) => [...messages, data]);
+            } else if (data.command === "updatePhrase") {
+                setPhraseImages({
+                    [`${data.roundNumber}-${data.turnNumber}`]: data.imageUrl,
+                    ...phraseImages,
+                });
             } else if (data.hasOwnProperty("gameState")) {
                 setGameState(data.gameState);
             }
@@ -133,8 +139,6 @@ function Game() {
             </>
         );
     };
-
-    console.log(gameState);
 
     const owner = gameState.owner?.display_name;
     const lobby = () => {
@@ -250,7 +254,9 @@ function Game() {
         return (
             <>
                 <Typography variant="h2">Your story has been told:</Typography>
-                {gameState.phrases.map((phrase, i) => {
+                {gameState.phrases.map((phrase) => {
+                    const imageUrl =
+                        phraseImages[`${phrase.roundNumber}-${phrase.turnNumber}`] ?? "";
                     return (
                         <>
                             {phrase.turnNumber === 1 && (
@@ -263,10 +269,11 @@ function Game() {
                                 <Typography variant="body1">
                                     {phrase.author}: {phrase.phrase}
                                 </Typography>
-                                {phrase.image_url !== "" ? (
+                                {imageUrl !== "" ? (
                                     <img
                                         style={{ marginLeft: "auto" }}
-                                        src={phrase.image_url}
+                                        src={imageUrl}
+                                        alt={phrase.phrase}
                                     ></img>
                                 ) : (
                                     <CircularProgress sx={{ marginLeft: "auto" }} />
