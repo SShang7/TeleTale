@@ -61,15 +61,15 @@ function Game() {
             if (data.command === "chat") {
                 setMessageList((messages) => [...messages, data]);
             } else if (data.command === "updatePhrase") {
-                setPhraseImages({
+                setPhraseImages((phraseImages) => ({
                     [`${data.roundNumber}-${data.turnNumber}`]: data.imageUrl,
                     ...phraseImages,
-                });
+                }));
             } else if (data.hasOwnProperty("gameState")) {
                 setGameState(data.gameState);
             }
         }
-    }, [lastJsonMessage, setGameState, phraseImages, setPhraseImages]);
+    }, [lastJsonMessage, setGameState, setPhraseImages]);
 
     if (hasWebsocketError) {
         return (
