@@ -1,4 +1,6 @@
 import logging
+import asyncio
+import threading
 from random import shuffle
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -8,6 +10,33 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from .models import Game, GamePhrase, GamePlayer
 from profiles.models import Profile
+
+
+def background_thread(loop):
+    asyncio.set_event_loop(loop)
+    loop.run_forever()
+
+
+background_event_loop = asyncio.new_event_loop()
+background_thread = threading.Thread(
+    target=background_thread, args=(background_event_loop,), daemon=True)
+background_thread.start()
+
+
+class MockAIGenerator:
+    _logger = logging.getLogger(__name__)
+
+    async def generate(self, game, round_number, turn_number, phrase_content):
+        self._logger.debug(f"Generating for phrase: '{phrase_content}'.")
+
+        # TODO: actually use AI to generate this image url.
+        await asyncio.sleep(3)
+        image_url = f'https://picsum.photos/336?{round_number}-{turn_number}'
+
+        await game.set_phrase_image_url(round_number, turn_number, image_url)
+
+        self._logger.debug(
+            f"Done generating for phrase: '{phrase_content}'. Got image url {image_url}.")
 
 
 class GameConsumer(AsyncJsonWebsocketConsumer):
@@ -91,6 +120,23 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                     player.turn_position -= 1
                     player.save()
             self.game.save()
+
+    async def set_phrase_image_url(self, round_number, turn_number, image_url):
+        if self.game is None or len(self.all_players) == 0:
+            self._logger.debug(
+                f"Generated image for deleted game {self.game_id}.")
+            return
+
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'command': 'updatePhrase',
+                'type': 'websocket_update_phrase',
+                'round_number': round_number,
+                'turn_number': turn_number,
+                'image_url': image_url,
+            }
+        )
 
     async def disconnect(self, close_code):
         self._logger.debug(
@@ -191,9 +237,8 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
     @database_sync_to_async
     def write_phrase(self, content):
         # Submit phrase for the player's turn
-        # TODO: send phrase to ML model
         phrase = content.get('phrase', '')
-        GamePhrase.objects.create(
+        phrase_db_object = GamePhrase.objects.create(
             author=self.player.profile,
             game=self.game,
             round_number=self.game.current_round,
@@ -201,9 +246,13 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             phrase=phrase,
         )
 
+        # Schedule to mock AI generator to run in the background.
+        current_round, current_turn = self.game.current_round, self.game.current_turn
+        background_event_loop.call_soon_threadsafe(
+            lambda: asyncio.get_event_loop().create_task(MockAIGenerator().generate(self, current_round, current_turn, phrase)))
+
         # Update the turn and round
         turns = len(self.all_players)
-        current_turn = self.game.current_turn
 
         # This line increments the turn by one, modulo the number of turns (1-indexed)
         next_turn = (((current_turn - 1) + 1) % turns) + 1
@@ -236,6 +285,14 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             'command': event['command'],
             'sender': event['sender'],
             'message': event['message'],
+        }))
+
+    async def websocket_update_phrase(self, event):
+        await self.send_json(({
+            'command': event['command'],
+            'roundNumber': event['round_number'],
+            'turnNumber': event['turn_number'],
+            'imageUrl': event['image_url'],
         }))
 
     async def websocket_leave(self, event):

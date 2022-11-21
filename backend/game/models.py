@@ -62,7 +62,7 @@ class GamePhrase(models.Model):
     round_number = models.PositiveSmallIntegerField()
     turn_number = models.PositiveSmallIntegerField()
     phrase = models.TextField()
-    image = models.ImageField()
+    image_url = models.TextField()
 
     def as_json(self):
         return {
@@ -70,4 +70,5 @@ class GamePhrase(models.Model):
             'roundNumber': self.round_number,
             'turnNumber': self.turn_number,
             'phrase': self.phrase,
+            'image_url': self.image_url
         }

@@ -42,6 +42,7 @@ function Game() {
     const [hasWebsocketError, setHasWebsocketError] = useState(false);
     const [message, setMessage] = useState("");
     const [messageList, setMessageList] = useState([]);
+    const [phraseImages, setPhraseImages] = useState({});
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
         onError: () => setHasWebsocketError(!!profile && profile.isLoggedIn),
     });
@@ -59,11 +60,16 @@ function Game() {
             const data = lastJsonMessage;
             if (data.command === "chat") {
                 setMessageList((messages) => [...messages, data]);
+            } else if (data.command === "updatePhrase") {
+                setPhraseImages({
+                    [`${data.roundNumber}-${data.turnNumber}`]: data.imageUrl,
+                    ...phraseImages,
+                });
             } else if (data.hasOwnProperty("gameState")) {
                 setGameState(data.gameState);
             }
         }
-    }, [lastJsonMessage, setGameState]);
+    }, [lastJsonMessage, setGameState, phraseImages, setPhraseImages]);
 
     if (hasWebsocketError) {
         return (
@@ -249,14 +255,30 @@ function Game() {
             <>
                 <Typography variant="h2">Your story has been told:</Typography>
                 {gameState.phrases.map((phrase) => {
+                    const imageUrl =
+                        phraseImages[`${phrase.roundNumber}-${phrase.turnNumber}`] ?? "";
                     return (
                         <>
                             {phrase.turnNumber === 1 && (
-                                <Typography variant="h6">Round {phrase.roundNumber}</Typography>
+                                <>
+                                    <hr />
+                                    <Typography variant="h6">Round {phrase.roundNumber}</Typography>
+                                </>
                             )}
-                            <Typography variant="body1">
-                                {phrase.author}: {phrase.phrase}
-                            </Typography>
+                            <div style={{ display: "flex", alignItems: "center" }}>
+                                <Typography variant="body1">
+                                    {phrase.author}: {phrase.phrase}
+                                </Typography>
+                                {imageUrl !== "" ? (
+                                    <img
+                                        style={{ marginLeft: "auto" }}
+                                        src={imageUrl}
+                                        alt={phrase.phrase}
+                                    ></img>
+                                ) : (
+                                    <CircularProgress sx={{ marginLeft: "auto" }} />
+                                )}
+                            </div>
                         </>
                     );
                 })}
