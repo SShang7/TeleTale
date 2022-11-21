@@ -187,7 +187,7 @@ function Game() {
 
     const chat = () => {
         return (
-            <ChatContainer>
+            <ChatContainer style={{ height: "50vh" }}>
                 <ConversationHeader>
                     <ConversationHeader.Content info="Chat with other players!" />
                 </ConversationHeader>
