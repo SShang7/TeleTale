@@ -69,7 +69,7 @@ function Game() {
                 setGameState(data.gameState);
             }
         }
-    }, [lastJsonMessage, setGameState]);
+    }, [lastJsonMessage, setGameState, phraseImages, setPhraseImages]);
 
     if (hasWebsocketError) {
         return (
