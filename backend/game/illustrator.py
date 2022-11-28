@@ -76,7 +76,7 @@ def illustrate(text):
     stability_api = client.StabilityInference(
         key=settings.STABLEDIFFUSION_API,
         verbose=True,
-        engine="stable-diffusion-v1-5"
+        engine="stable-diffusion-768-v2-0"
     )
 
     answers = stability_api.generate(
@@ -84,7 +84,7 @@ def illustrate(text):
         width=256,
         height=256,
         steps=25,
-        guidance_strength=9.0,
+        cfg_scale=9.0,
         samples=1,
         seed=1425886792
     )
