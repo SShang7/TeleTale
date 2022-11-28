@@ -3,6 +3,7 @@ import {
     Button,
     CircularProgress,
     FormControl,
+    Paper,
     Grid,
     InputLabel,
     List,
@@ -13,6 +14,7 @@ import {
     Select,
     TextField,
     Typography,
+    TextareaAutosize,
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import { showGoogleLogin } from "../util/login";
@@ -29,8 +31,7 @@ import {
     MessageInput,
     MessageList,
 } from "@chatscope/chat-ui-kit-react";
-// eslint-disable-next-line no-unused-vars
-import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
+import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 
 function Game() {
     const { id } = useParams();
@@ -144,30 +145,41 @@ function Game() {
     const owner = gameState.owner?.display_name;
     const lobby = () => {
         return (
-            <>
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
                 <Typography variant="h2">{owner}'s Lobby</Typography>
-                {gameIdDisplay()}
-                {gameModeSelection()}
-                {playerList()}
-                <Button
-                    variant="contained"
-                    onClick={() => {
-                        window.location = "/";
-                    }}
-                >
-                    Leave Lobby
-                </Button>
-                <Button
-                    variant="contained"
-                    onClick={() => {
-                        sendJsonMessage({
-                            command: "start",
-                        });
-                    }}
-                >
-                    Start Game
-                </Button>
-            </>
+                <Box sx={{ py: 1 }} />
+                <Box sx={{ display: "flex" }}>
+                    {gameIdDisplay()}
+                    <Box sx={{ px: 1 }} />
+                    {gameModeSelection()}
+                </Box>
+                <Box sx={{ py: 1 }} />
+                <Paper variant="outlined" elevation={4}>
+                    {playerList()}
+                </Paper>
+                <Box sx={{ py: 1 }} />
+                <Box sx={{ display: "flex" }}>
+                    <Button
+                        variant="contained"
+                        onClick={() => {
+                            window.location = "/";
+                        }}
+                    >
+                        Leave Lobby
+                    </Button>
+                    <Box sx={{ px: 1 }} />
+                    <Button
+                        variant="contained"
+                        onClick={() => {
+                            sendJsonMessage({
+                                command: "start",
+                            });
+                        }}
+                    >
+                        Start Game
+                    </Button>
+                </Box>
+            </Box>
         );
     };
 
@@ -214,21 +226,29 @@ function Game() {
         }
 
         return (
-            <>
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
                 <Typography variant="h2">Round {gameState.currentRound}</Typography>
                 {profile.id === gameState.currentPlayer.id ? (
                     <>
-                        <Typography>It's your turn! Your prompt is:</Typography>
-                        <Typography>{gameState.prompt}</Typography>
-
-                        <TextField
+                        <Typography variant="h5">It's your turn! Your prompt is:</Typography>
+                        <Box sx={{ pt: 1 }} />
+                        <Typography
+                            variant="body1"
+                            style={{ width: "100%", wordWrap: "break-word" }}
+                        >
+                            <em>{gameState.prompt}</em>
+                        </Typography>
+                        <Box sx={{ pt: 1 }} />
+                        <TextareaAutosize
                             value={phrase}
+                            style={{ width: "100%", resize: "vertical" }}
                             onChange={(e) => setPhrase(e.target.value)}
                             variant="outlined"
                             placeholder="Enter your phrase!"
                             multiline
-                            rows={2}
-                        ></TextField>
+                            minRows={4}
+                        ></TextareaAutosize>
+                        <Box sx={{ pt: 1 }} />
                         <Button
                             variant="contained"
                             onClick={() => {
@@ -243,11 +263,13 @@ function Game() {
                         </Button>
                     </>
                 ) : (
-                    <Typography>
-                        It is currently {gameState.currentPlayer.display_name}'s turn.
-                    </Typography>
+                    <>
+                        <Typography variant="body1">
+                            <em>It is currently {gameState.currentPlayer.display_name}'s turn.</em>
+                        </Typography>
+                    </>
                 )}
-            </>
+            </Box>
         );
     };
 
