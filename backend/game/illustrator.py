@@ -76,17 +76,28 @@ def illustrate(text):
     stability_api = client.StabilityInference(
         key=settings.STABLEDIFFUSION_API,
         verbose=True,
-        engine="stable-diffusion-768-v2-0"
+        engine="stable-diffusion-v1-5"
     )
 
     answers = stability_api.generate(
         prompt=description,
-        width=256,
-        height=256,
-        steps=25,
-        cfg_scale=9.0,
+        # If a seed is provided, the resulting generated image will be deterministic.
+        seed=4108838880,
+        # What this means is that as long as all generation parameters remain the same, you can always recall the same image simply by generating it again.
+        # Note: This isn't quite the case for Clip Guided generations, which we'll tackle in a future example notebook.
+        steps=50,  # Step Count defaults to 50 if not specified here.
+        # Influences how strongly your generation is guided to match your prompt.
+        cfg_scale=8.0,
+        # Setting this value higher increases the strength in which it tries to match your prompt.
+                   # Defaults to 7.0 if not specified.
+        width=512,  # Generation width, defaults to 512 if not included.
+        height=512,  # Generation height, defaults to 512 if not included.
+        # Number of images to generate, defaults to 1 if not included.
         samples=1,
-        seed=1425886792
+        # Choose which sampler we want to denoise our generation with.
+        sampler=generation.SAMPLER_K_DPM_2_ANCESTRAL
+        # Defaults to k_lms if not specified. Clip Guidance only supports ancestral samplers.
+        # (Available Samplers: ddim, plms, k_euler, k_euler_ancestral, k_heun, k_dpm_2, k_dpm_2_ancestral, k_dpmpp_2s_ancestral, k_lms, k_dpmpp_2m)
     )
 
     for resp in answers:
