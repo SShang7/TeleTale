@@ -83,8 +83,10 @@ def illustrate(text):
         prompt=description,
         width=256,
         height=256,
+        steps=25
+        guidance_strength=9.0,
         samples=1,
-        seed=12345
+        seed=1425886792
     )
 
     for resp in answers:
