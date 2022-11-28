@@ -9,13 +9,14 @@ import {
     ListItem,
     ListItemButton,
     MenuItem,
+    Paper,
     Select,
     TextField,
     Typography,
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import { showGoogleLogin } from "../util/login";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useWebSocket from "react-use-websocket";
 import { Link } from "react-router-dom";
@@ -262,23 +263,30 @@ function Game() {
                             {phrase.turnNumber === 1 && (
                                 <>
                                     <hr />
-                                    <Typography variant="h6">Round {phrase.roundNumber}</Typography>
+                                    <Typography variant="h4">Round {phrase.roundNumber}</Typography>
                                 </>
                             )}
-                            <div style={{ display: "flex", alignItems: "center" }}>
-                                <Typography variant="body1">
-                                    {phrase.author}: {phrase.phrase}
+                            <Paper variant="outlined" sx={{ display: "flex", my: 2, padding: 1 }}>
+                                <Typography
+                                    variant="body1"
+                                    style={{ width: "48%", "word-wrap": "break-word" }}
+                                >
+                                    <strong>{phrase.author}:</strong> {phrase.phrase}
                                 </Typography>
                                 {imageUrl !== "" ? (
                                     <img
-                                        style={{ marginLeft: "auto" }}
+                                        style={{
+                                            marginLeft: "auto",
+                                            width: "48%",
+                                            maxHeight: "336px", // this should be set to what the generated image size is fixed to
+                                        }}
                                         src={imageUrl}
                                         alt={phrase.phrase}
                                     ></img>
                                 ) : (
                                     <CircularProgress sx={{ marginLeft: "auto" }} />
                                 )}
-                            </div>
+                            </Paper>
                         </>
                     );
                 })}
