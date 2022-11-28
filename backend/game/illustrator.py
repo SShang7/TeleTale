@@ -42,7 +42,6 @@ def custom_pos_tagger(raw_documents: List[str], tagger: flair.models.SequenceTag
     return list(zip(words, pos_tags))
 
 
-
 #init vectorizer
 vectorizer = KeyphraseCountVectorizer(lowercase = False, custom_pos_tagger=custom_pos_tagger)
 vectorizer.fit(text)
@@ -50,13 +49,13 @@ vectorizer.fit(text)
 #find keyphrases
 keyphrases = vectorizer.get_feature_names_out()
 def check_space(Test_string):
-    return Test_string.count(" ")
+    return Test_string.count(" ")*0.90 + 0.1*len(Test_string)
 
 #select best phrase based on space count
 phrase = max(keyphrases, key=check_space)
 def describe(phrase, text):
     for t in text:
-        m = re.search(f"({phrase}[^.?!;:—+)", t)
+        m = re.search(f"({phrase}[^.?!;:—]*)", t)
         if m:
             found = m.group(1)
             return found
