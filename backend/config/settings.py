@@ -229,3 +229,7 @@ GOOGLE_OAUTH2_CLIENT_SECRET = env.str(
 SWAGGER_SETTINGS = {
     'DEFAULT_INFO': 'config.urls.api_info',
 }
+
+STABLEDIFFUSION_API = env.str(
+    'DJANGO_STABLEDIFFUSION_API', default=''
+)

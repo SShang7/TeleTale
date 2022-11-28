@@ -7,6 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from .illustrator import illustrate
 
 from .models import Game, GamePhrase, GamePlayer
 from profiles.models import Profile
@@ -29,14 +30,12 @@ class MockAIGenerator:
     async def generate(self, game, round_number, turn_number, phrase_content):
         self._logger.debug(f"Generating for phrase: '{phrase_content}'.")
 
-        # TODO: actually use AI to generate this image url.
-        await asyncio.sleep(3)
-        image_url = f'https://picsum.photos/336?{round_number}-{turn_number}'
+        image_url = illustrate([phrase_content])
 
         await game.set_phrase_image_url(round_number, turn_number, image_url)
 
         self._logger.debug(
-            f"Done generating for phrase: '{phrase_content}'. Got image url {image_url}.")
+            f"Done generating for phrase: '{phrase_content}'. Got image url {image_url[:20]}.")
 
 
 class GameConsumer(AsyncJsonWebsocketConsumer):
