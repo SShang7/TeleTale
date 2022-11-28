@@ -10,7 +10,6 @@ import {
     ListItem,
     ListItemButton,
     MenuItem,
-    Paper,
     Select,
     TextField,
     Typography,
@@ -288,7 +287,10 @@ function Game() {
                                     <Typography variant="h4">Round {phrase.roundNumber}</Typography>
                                 </>
                             )}
-                            <Paper variant="outlined" sx={{ display: "flex", my: 2, padding: 1 }}>
+                            <Paper
+                                variant="outlined"
+                                sx={{ display: "flex", my: 2, padding: 1, minHeight: "350px" }}
+                            >
                                 <Typography
                                     variant="body1"
                                     style={{ width: "48%", "word-wrap": "break-word" }}
@@ -306,7 +308,11 @@ function Game() {
                                         alt={phrase.phrase}
                                     ></img>
                                 ) : (
-                                    <CircularProgress sx={{ marginLeft: "auto" }} />
+                                    <CircularProgress
+                                        sx={{
+                                            marginLeft: "auto",
+                                        }}
+                                    />
                                 )}
                             </Paper>
                         </>
