@@ -95,4 +95,4 @@ def illustrate(text):
                     "Please modify the prompt and try again.")
             if artifact.type == generation.ARTIFACT_IMAGE:
                 data_url = f"data:image/png;base64,{base64.b64encode(artifact.binary).decode('utf-8')}"
-                return data_url
+                return (data_url, description)

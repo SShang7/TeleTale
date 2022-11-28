@@ -30,12 +30,12 @@ class MockAIGenerator:
     async def generate(self, game, round_number, turn_number, phrase_content):
         self._logger.debug(f"Generating for phrase: '{phrase_content}'.")
 
-        image_url = illustrate([phrase_content])
+        image_url, processed_text = illustrate([phrase_content])
 
         await game.set_phrase_image_url(round_number, turn_number, image_url)
 
         self._logger.debug(
-            f"Done generating for phrase: '{phrase_content}'. Got image url {image_url[:20]}.")
+            f"Done generating for phrase: '{phrase_content}'. Processed to {processed_text}. Got image url {image_url[:20]}.")
 
 
 class GameConsumer(AsyncJsonWebsocketConsumer):
