@@ -51,3 +51,8 @@ DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET=<client_secret>
 - [Django Channels example](https://github.com/aduranil/django-channels-react-multiplayer)
 - [Django Channels JWT authentication](https://stackoverflow.com/questions/65297148/django-channels-jwt-authentication)
 - [React Chat UI](https://github.com/chatscope/chat-ui-kit-react)
+- [Re Documentation](https://docs.python.org/3/library/re.html)
+- [Keyphrase Extraction Article](https://towardsdatascience.com/enhancing-keybert-keyword-extraction-results-with-keyphrasevectorizers-3796fa93f4db)
+- [Keyphrase Vectorizers Documentation](https://keyphrase-vectorizers.readthedocs.io/en/latest/index.html)
+- [Flair](https://github.com/flairNLP/flair)
+- [Stable Diffusion](https://platform.stability.ai/)
